@@ -1,4 +1,5 @@
-import { ArrowRight, Play, Code2, Terminal, Cpu, Download } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import Button from '../ui/Button';
 import ParticleSystem from '../ui/ParticleSystem';
 import styles from './Hero.module.css';
@@ -31,9 +32,11 @@ export default function Hero() {
 
                 <div className={styles.ctas}>
                     {/* TODO: Add Download CTA when mobile app launches */}
-                    <Button variant="primary" icon={<ArrowRight size={20} />}>
-                        Explore Paths
-                    </Button>
+                    <Link href="/paths">
+                        <Button variant="primary" icon={<ArrowRight size={20} />}>
+                            Explore Paths
+                        </Button>
+                    </Link>
                 </div>
             </div>
 

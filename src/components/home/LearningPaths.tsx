@@ -132,7 +132,7 @@ export default function LearningPaths() {
 
                             <Button
                                 variant="ghost"
-                                className="!p-2 !bg-white/20 hover:!bg-white/30 !text-white"
+                                className="!p-2"
                                 onClick={(e) => {
                                     if (path.status === 'coming-soon') {
                                         e.stopPropagation();
@@ -156,7 +156,7 @@ export default function LearningPaths() {
                             <>
                                 <h3 className={styles.modalTitle}>Coming Soon! 🚀</h3>
                                 <p className={styles.modalText}>
-                                    We're crafting an amazing curriculum for <strong>{selectedPath}</strong>.
+                                    We&apos;re crafting an amazing curriculum for <strong>{selectedPath}</strong>.
                                     Want to be notified when it launches?
                                 </p>
                                 <form onSubmit={handleNotifySubmit} className={styles.notifyForm}>
@@ -174,8 +174,8 @@ export default function LearningPaths() {
                         ) : (
                             <div className={styles.successMessage}>
                                 <div className={styles.successIcon}>✨</div>
-                                <h3>You're on the list!</h3>
-                                <p>We'll email you when {selectedPath} is ready.</p>
+                                <h3>You&apos;re on the list!</h3>
+                                <p>We&apos;ll email you when {selectedPath} is ready.</p>
                                 <Button variant="secondary" onClick={() => setShowNotifyModal(false)}>Close</Button>
                             </div>
                         )}

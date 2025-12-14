@@ -1,4 +1,4 @@
-import { MessageCircle, Users, Code2 } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import Button from '../ui/Button';
 import styles from './Community.module.css';
@@ -14,11 +14,18 @@ export default function Community() {
                     </h2>
                     <p className={styles.description}>
                         Connect with developers worldwide, share knowledge, and stay updated with the latest tech trends.
-                        Get help when you're stuck and celebrate your wins together.
+                        Get help when you&apos;re stuck and celebrate your wins together.
                     </p>
-                    <Button variant="primary" icon={<MessageCircle size={20} />}>
-                        Join DevPath Community
-                    </Button>
+                    <a
+                        href="https://chat.whatsapp.com/D2PRfQy4HYgC4XURhY2X8C"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ textDecoration: 'none' }}
+                    >
+                        <Button variant="primary" icon={<MessageCircle size={20} />}>
+                            Join DevPath Community
+                        </Button>
+                    </a>
                 </div>
 
                 <div className={styles.mockupWrapper}>
@@ -57,7 +64,7 @@ export default function Community() {
                                         <span className={styles.username} style={{ color: '#34d399' }}>Alex Rivera</span>
                                         <span className={styles.time}>Today at 10:45 AM</span>
                                     </div>
-                                    <p className={styles.text}>Congrats Sarah! I'm working on the Node.js path right now. Would love to see your final project.</p>
+                                    <p className={styles.text}>Congrats Sarah! I&apos;m working on the Node.js path right now. Would love to see your final project.</p>
                                 </div>
                             </div>
 

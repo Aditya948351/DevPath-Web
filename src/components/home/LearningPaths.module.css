@@ -13,7 +13,7 @@
     font-size: 48px;
     font-weight: 700;
     margin-bottom: 24px;
-    background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -39,7 +39,7 @@
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--glass-border);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -94,7 +94,7 @@
 }
 
 .highlight {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--glass-highlight);
     padding: 4px 12px;
     border-radius: 8px;
     font-size: 12px;
@@ -116,7 +116,7 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--glass-highlight);
     border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -144,7 +144,7 @@
 }
 
 .modal {
-    background: #151a21;
+    background: var(--card);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 40px;
@@ -193,7 +193,7 @@
 
 .emailInput {
     flex: 1;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 12px 16px;
@@ -205,7 +205,7 @@
 
 .emailInput:focus {
     border-color: #00d4ff;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-highlight);
 }
 
 .successMessage {

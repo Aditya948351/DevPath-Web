@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { RealTimeProvider } from "@/context/RealTimeContext";
 import BackgroundMesh from '@/components/layout/BackgroundMesh';
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: '--font-inter' });
@@ -22,20 +23,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
-        <AuthProvider>
-          <GamificationProvider>
-            <RealTimeProvider>
-              <BackgroundMesh />
-              <Navbar />
-              <main style={{ position: 'relative', zIndex: 1 }}>
-                {children}
-              </main>
-              <Footer />
-            </RealTimeProvider>
-          </GamificationProvider>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <GamificationProvider>
+              <RealTimeProvider>
+                <BackgroundMesh />
+                <Navbar />
+                <main style={{ position: 'relative', zIndex: 1 }}>
+                  {children}
+                </main>
+                <Footer />
+              </RealTimeProvider>
+            </GamificationProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

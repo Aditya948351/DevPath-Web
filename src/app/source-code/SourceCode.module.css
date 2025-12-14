@@ -13,13 +13,16 @@
 }
 
 .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     margin-bottom: 80px;
 }
 
 .heroIcon {
     margin-bottom: 24px;
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+    filter: drop-shadow(0 0 20px var(--icon-glow));
 }
 
 .title {
@@ -47,7 +50,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-highlight);
     padding: 12px 24px;
     border-radius: 30px;
     border: 1px solid var(--glass-border);
@@ -71,7 +74,7 @@
 }
 
 .repoCard {
-    background: rgba(21, 26, 33, 0.6);
+    background: var(--card);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     padding: 32px;
@@ -97,7 +100,7 @@
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-highlight);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -134,7 +137,7 @@
 }
 
 .quickStart {
-    background: #0d1117;
+    background: var(--card);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     padding: 40px;
@@ -184,7 +187,7 @@
 }
 
 .codeSnippet {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 20px;
@@ -199,7 +202,7 @@
 }
 
 .copyButton {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-highlight);
     border: none;
     border-radius: 6px;
     padding: 6px 12px;
@@ -227,7 +230,7 @@
 }
 
 .techItem {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     padding: 16px 32px;
     border-radius: 12px;

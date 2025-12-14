@@ -20,7 +20,7 @@ export default function TranslatePage() {
         <div className={styles.container}>
             <div className={styles.content}>
                 <div className={styles.hero}>
-                    <Globe size={80} className={styles.globeIcon} color="#00d4ff" />
+                    <Globe size={80} className={styles.globeIcon} />
                     <h1 className={styles.title}>Help DevPath Speak Your Language</h1>
                     <p className={styles.subtitle}>
                         Join our translation community and make DevPath accessible to developers worldwide.
@@ -36,7 +36,7 @@ export default function TranslatePage() {
                             <div className={styles.cardHeader}>
                                 <span className={styles.flag}>{lang.flag}</span>
                                 <span className={`${styles.statusBadge} ${lang.progress === 100 ? styles.complete :
-                                        lang.progress > 50 ? styles.progress : styles.start
+                                    lang.progress > 50 ? styles.progress : styles.start
                                     }`}>
                                     {lang.progress === 100 ? 'Complete' :
                                         lang.progress > 0 ? 'In Progress' : 'Not Started'}
@@ -94,7 +94,7 @@ export default function TranslatePage() {
                 <div className={styles.section} style={{ textAlign: 'center' }}>
                     <h2 className={styles.sectionTitle}>Request a Language</h2>
                     <p style={{ color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                        Don't see your language? Request it and we'll set it up!
+                        Don&apos;t see your language? Request it and we&apos;ll set it up!
                     </p>
                     <div className={styles.requestForm}>
                         <input type="text" placeholder="Language Name (e.g. Italian)" className={styles.input} />

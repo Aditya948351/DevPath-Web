@@ -7,7 +7,7 @@
 
 .sidebar {
     width: 300px;
-    background: rgba(15, 20, 25, 0.5);
+    background: var(--glass-bg);
     border-right: 1px solid var(--glass-border);
     padding: 24px;
     position: fixed;
@@ -24,7 +24,7 @@
 
 .searchInput {
     width: 100%;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     border-radius: 8px;
     padding: 10px 16px 10px 40px;
@@ -36,7 +36,7 @@
 
 .searchInput:focus {
     border-color: #00d4ff;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-highlight);
 }
 
 .searchIcon {
@@ -75,7 +75,7 @@
 
 .navLink:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-highlight);
 }
 
 .navLink.active {

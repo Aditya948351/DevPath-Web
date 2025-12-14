@@ -2,91 +2,141 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Premium Color System */
-  --bg-primary: #050714;
-  --bg-secondary: #0a0e27;
-  --text-primary: #ffffff;
-  --text-secondary: #94a3b8;
+@layer base {
+  :root {
+    /* Light Mode (Premium) */
+    --background: 210 40% 98%;
+    /* #f8fafc */
+    --foreground: 222 47% 11%;
+    /* #0f172a */
 
-  /* Shadcn Compatibility Layer */
-  --background: 232 47% 5%;
-  /* #050714 converted to HSL */
-  --foreground: 0 0% 100%;
-  /* #ffffff */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-  --card: 232 47% 5%;
-  --card-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-  --popover: 232 47% 5%;
-  --popover-foreground: 0 0% 100%;
+    --primary: 199 89% 48%;
+    /* #0ea5e9 */
+    --primary-foreground: 210 40% 98%;
 
-  --primary: 190 100% 50%;
-  /* Cyan #00d4ff */
-  --primary-foreground: 232 47% 5%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
 
-  --secondary: 232 60% 10%;
-  /* #0a0e27 */
-  --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-  --muted: 215 16% 47%;
-  --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222 47% 11%;
 
-  --accent: 273 67% 59%;
-  /* Purple #9d4edd */
-  --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
 
-  --border: 215 16% 47%;
-  --input: 215 16% 47%;
-  --ring: 190 100% 50%;
+    --radius: 0.5rem;
 
-  --radius: 0.5rem;
+    /* Accent Colors */
+    --accent-cyan: #00d4ff;
+    --accent-purple: #9d4edd;
+    --accent-pink: #ff006e;
+    --accent-green: #00ff88;
+    --accent-orange: #ff6b35;
 
-  /* Accent Colors */
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    --gradient-secondary: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+    --gradient-glow: radial-gradient(circle at center, rgba(0, 212, 255, 0.15), transparent 70%);
 
-  /* Accent Colors */
-  --accent-cyan: #00d4ff;
-  --accent-purple: #9d4edd;
-  --accent-pink: #ff006e;
-  --accent-green: #00ff88;
-  --accent-orange: #ff6b35;
+    /* Glassmorphism Premium */
+    /* Glassmorphism Premium (Light) */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.5);
+    --glass-blur: 20px;
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    --icon-glow: rgba(0, 0, 0, 0.1);
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-  --gradient-secondary: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-  --gradient-glow: radial-gradient(circle at center, rgba(0, 212, 255, 0.15), transparent 70%);
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
 
-  /* Glassmorphism Premium */
-  --glass-bg: rgba(15, 20, 25, 0.6);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-highlight: rgba(255, 255, 255, 0.05);
-  --glass-blur: 20px;
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    /* Animation */
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --transition-fast: 0.2s var(--ease-out-expo);
+    --transition-medium: 0.4s var(--ease-out-expo);
+    --transition-slow: 0.8s var(--ease-out-expo);
 
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-xxl: 48px;
+    /* Custom Premium Colors (Light) */
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+  }
 
-  /* Animation */
-  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
-  --transition-fast: 0.2s var(--ease-out-expo);
-  --transition-medium: 0.4s var(--ease-out-expo);
-  --transition-slow: 0.8s var(--ease-out-expo);
+  .dark {
+    /* Dark Mode (Premium) */
+    --background: 232 47% 5%;
+    /* #050714 */
+    --foreground: 0 0% 100%;
+    /* #ffffff */
+
+    --card: 232 47% 5%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 232 47% 5%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 190 100% 50%;
+    /* Cyan #00d4ff */
+    --primary-foreground: 232 47% 5%;
+
+    --secondary: 232 60% 10%;
+    /* #0a0e27 */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 215 16% 47%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 273 67% 59%;
+    /* Purple #9d4edd */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 215 16% 47%;
+    --input: 215 16% 47%;
+    --ring: 190 100% 50%;
+
+    /* Glassmorphism Premium (Dark) */
+    --glass-bg: rgba(15, 20, 25, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-highlight: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+    --icon-glow: rgba(255, 255, 255, 0.2);
+
+    /* Custom Premium Colors (Dark) */
+    --bg-primary: #050714;
+    --bg-secondary: #0a0e27;
+    --text-primary: #ffffff;
+    --text-secondary: #94a3b8;
+  }
 }
+
+
 
 html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
   background: var(--bg-primary);
-  color: var(--text-primary);
   color: var(--text-primary);
   font-family: var(--font-inter), sans-serif;
   scroll-behavior: smooth;

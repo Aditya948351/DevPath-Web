@@ -92,7 +92,7 @@ export default function WikiPage() {
 
                         <h2>What is DevPath?</h2>
                         <p>
-                            DevPath is more than just a learning platform. It's an ecosystem where you can:
+                            DevPath is more than just a learning platform. It&apos;s an ecosystem where you can:
                         </p>
                         <ul>
                             <li>Follow expert-curated <strong>Learning Paths</strong> to master new stacks.</li>

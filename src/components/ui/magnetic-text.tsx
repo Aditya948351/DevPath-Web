@@ -13,7 +13,7 @@ interface MagneticTextProps {
 export function MagneticText({ text = "CREATIVE", hoverText = "EXPLORE", className }: MagneticTextProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const overlayRef = useRef<HTMLDivElement>(null)
-    const [isHovered, setIsHovered] = useState(false)
+
 
     const mousePos = useRef({ x: 0, y: 0 })
     const currentPos = useRef({ x: 0, y: 0 })
@@ -73,17 +73,17 @@ export function MagneticText({ text = "CREATIVE", hoverText = "EXPLORE", classNa
         mousePos.current = { x, y }
         currentPos.current = { x, y }
         targetRadius.current = 75 // 150px diameter
-        setIsHovered(true)
+
     }, [])
 
     const handleMouseLeave = useCallback(() => {
-        setIsHovered(false)
+
         targetRadius.current = 0
     }, [])
 
     // Accessibility focus
     const handleFocus = useCallback(() => {
-        setIsHovered(true)
+
         targetRadius.current = 75
         if (containerRef.current) {
             const rect = containerRef.current.getBoundingClientRect()
@@ -93,7 +93,7 @@ export function MagneticText({ text = "CREATIVE", hoverText = "EXPLORE", classNa
     }, [])
 
     const handleBlur = useCallback(() => {
-        setIsHovered(false)
+
         targetRadius.current = 0
     }, [])
 

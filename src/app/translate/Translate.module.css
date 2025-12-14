@@ -13,6 +13,9 @@
 }
 
 .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
     margin-bottom: 80px;
 }
@@ -20,6 +23,8 @@
 .globeIcon {
     margin-bottom: 24px;
     animation: float 6s ease-in-out infinite;
+    color: var(--primary);
+    filter: drop-shadow(0 0 20px var(--icon-glow));
 }
 
 .title {
@@ -48,7 +53,7 @@
 }
 
 .card {
-    background: rgba(21, 26, 33, 0.6);
+    background: var(--card);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
     padding: 24px;
@@ -115,7 +120,7 @@
 
 .progressBar {
     height: 6px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-border);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 8px;
@@ -135,7 +140,7 @@
 }
 
 .section {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     border-radius: 24px;
     padding: 40px;
@@ -194,7 +199,7 @@
 
 .input {
     flex: 1;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     padding: 12px 20px;
@@ -205,7 +210,7 @@
 
 .input:focus {
     border-color: #00d4ff;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--glass-highlight);
 }
 
 @keyframes float {

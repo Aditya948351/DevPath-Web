@@ -69,9 +69,11 @@ export default function Footer() {
                 </div>
 
                 <div className={styles.bottom}>
-                    <p className={styles.copyright}>
-                        Developed with ❤️ by FounderName
-                    </p>
+                    <div className={styles.copyright} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <p><span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Founder</span> - Aditya Patil</p>
+                        <p><span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Co-founder</span> - 𝚜𝚌𝚑𝚛𝚘𝚍𝚒𝚗𝚐𝚎𝚛𝚜𝚙𝚎𝚝</p>
+                        <p><span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Technical Head</span> - Pranav Khaire</p>
+                    </div>
                     <div className={styles.socials}>
                         <a href="#" className={styles.socialIcon} aria-label="GitHub">
                             <Github size={20} />

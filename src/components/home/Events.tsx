@@ -1,4 +1,4 @@
-import { Calendar, Clock, Video, MapPin } from 'lucide-react';
+import { Calendar, Video } from 'lucide-react';
 import styles from './Events.module.css';
 
 const events = [

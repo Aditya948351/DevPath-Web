@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { CheckCircle, RefreshCw, Download, ChevronDown } from 'lucide-react';
+import { CheckCircle, RefreshCw } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import styles from './Updater.module.css';
 
@@ -59,7 +59,7 @@ export default function UpdaterPage() {
 
                     <div className={styles.message}>
                         <CheckCircle size={20} color="#10b981" />
-                        You're up to date!
+                        You&apos;re up to date!
                     </div>
 
                     <Button

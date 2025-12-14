@@ -53,7 +53,7 @@
 }
 
 .controls {
-    background: rgba(15, 20, 25, 0.8);
+    background: var(--glass-bg);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     padding: 16px;
@@ -84,12 +84,12 @@
 
 .tab:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-highlight);
 }
 
 .tab.active {
     color: white;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-highlight);
 }
 
 .filters {
@@ -102,7 +102,7 @@
 }
 
 .searchInput {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--glass-highlight);
     border: 1px solid var(--glass-border);
     border-radius: 8px;
     padding: 8px 12px 8px 36px;
@@ -134,7 +134,7 @@
 }
 
 .card {
-    background: rgba(21, 26, 33, 0.6);
+    background: var(--card);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     padding: 24px;
@@ -160,7 +160,7 @@
     width: 48px;
     height: 48px;
     border-radius: 12px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    background: var(--glass-highlight);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -178,7 +178,7 @@
 
 .moreButton:hover {
     color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-highlight);
 }
 
 .cardTitle {
