@@ -29,12 +29,9 @@
 .logoIcon {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
 }
 
 .navLinks {

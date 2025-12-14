@@ -68,12 +68,9 @@
 .serverIcon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
 }
 
 .serverName {
