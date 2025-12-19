@@ -63,15 +63,14 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-/* Profile Names Container - Only shows ONE line of text */
+/* Profile Names Container - Hard clip to hide ALL overflow including Q descender */
 .profileNames {
     width: 100%;
     height: 12rem;
-    /* Single line height */
-    overflow: hidden;
     position: relative;
-    background: var(--bg-primary);
-    /* Solid background to hide text behind */
+    /* CRITICAL: clip-path creates a hard clipping boundary - nothing outside is visible */
+    clip-path: inset(0 0 0 0);
+    overflow: hidden;
 }
 
 /* Each name container - stacked on top of each other */
@@ -81,10 +80,9 @@
     left: 0;
     width: 100%;
     height: 100%;
+    /* Each name also clips its content */
+    clip-path: inset(0 0 0 0);
     overflow: hidden;
-    /* Critical: clips text that goes outside */
-    background: var(--bg-primary);
-    /* Solid background prevents bleed-through */
 }
 
 /* Default text sits behind other names */
@@ -95,8 +93,6 @@
 /* Active names sit on top */
 .name:not(.default) {
     z-index: 2;
-    background: transparent;
-    /* Transparent so we see default when no name active */
 }
 
 .name h1 {
@@ -118,42 +114,41 @@
     user-select: none;
     transform: translateY(100%);
     margin: 0;
-    background: var(--bg-primary);
-    /* Solid background */
 }
 
 .default h1 {
     color: var(--text-secondary);
     transform: translateY(-100%);
-    background: var(--bg-primary);
 }
 
+/* Each letter also clips descenders */
 .name h1 .letter {
     display: inline-block;
     transform: translateY(0%);
     will-change: transform;
+    /* Clip descenders like Q tail */
+    overflow: hidden;
+    line-height: 0.85;
+    padding-bottom: 0.1em;
+    clip-path: inset(0 0 0 0);
 }
 
 /* Dark mode */
 :global(.dark) .name:not(.default) h1 {
     text-shadow: 0 0 40px rgba(0, 212, 255, 0.3);
-    background: var(--bg-primary);
 }
 
 :global(.dark) .default h1 {
     color: #e3e3db;
-    background: var(--bg-primary);
 }
 
 /* Light mode */
 :global(:root:not(.dark)) .name:not(.default) h1 {
     color: hsl(var(--primary));
-    background: var(--bg-primary);
 }
 
 :global(:root:not(.dark)) .default h1 {
     color: #374151;
-    background: var(--bg-primary);
 }
 
 /* ===== MOBILE STYLES ===== */
