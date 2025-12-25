@@ -11,7 +11,9 @@ interface AdminKeyModalProps {
     onCancel: () => void;
 }
 
+import { useAuth } from '@/context/AuthContext';
 export default function AdminKeyModal({ isOpen, onVerified, onCancel }: AdminKeyModalProps) {
+    const { verifyAdmin } = useAuth();
     const [key, setKey] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +49,7 @@ export default function AdminKeyModal({ isOpen, onVerified, onCancel }: AdminKey
         // Simulate a small delay for better UX
         setTimeout(() => {
             if (key === configKey) {
+                verifyAdmin();
                 onVerified();
             } else {
                 setError('Invalid Admin Key. Please try again.');

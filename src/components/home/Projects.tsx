@@ -1,6 +1,9 @@
-import { Star, GitFork, Eye } from 'lucide-react';
+"use client";
+
+import { useRef } from 'react';
 import { ProjectCard } from '../ProjectCard';
 import styles from './Projects.module.css';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 const projects = [
     {
@@ -54,6 +57,8 @@ const projects = [
 ];
 
 export default function Projects() {
+    const containerRef = useRef<HTMLDivElement>(null);
+
     return (
         <section className={styles.projects}>
             <div className={styles.header}>
@@ -63,10 +68,27 @@ export default function Projects() {
                 </p>
             </div>
 
-            <div className={styles.grid}>
-                {projects.map((project, index) => (
-                    <ProjectCard key={index} project={project} />
-                ))}
+            <div className={styles.scrollContainer} ref={containerRef}>
+                <div className={styles.grid}>
+                    {projects.map((project, index) => (
+                        <motion.div
+                            key={index}
+                            className={styles.projectWrapper}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                            viewport={{ once: true }}
+                            whileHover={{
+                                scale: 1.05,
+                                rotateY: 5,
+                                zIndex: 10
+                            }}
+                            style={{ perspective: 1000 }}
+                        >
+                            <ProjectCard project={project} />
+                        </motion.div>
+                    ))}
+                </div>
             </div>
         </section>
     );

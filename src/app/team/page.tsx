@@ -1,220 +1,130 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import gsap from 'gsap';
-import { teamMembers } from '@/data/team';
-import styles from './team.module.css';
+import { teamMembers, TeamMember } from '@/data/team';
+import { Github, Linkedin, Instagram } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function TeamPage() {
-    const sectionRef = useRef<HTMLElement>(null);
-    const imagesContainerRef = useRef<HTMLDivElement>(null);
-    const imagesRef = useRef<(HTMLDivElement | null)[]>([]);
-    const namesContainerRef = useRef<HTMLDivElement>(null);
-    const cleanupRef = useRef<(() => void)[]>([]);
-    const [mounted, setMounted] = useState(false);
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
-    const isMobileRef = useRef(false);
+    // Group members by category
+    const owner = teamMembers.filter(m => m.category === 'Owner');
+    const coreAdmins = teamMembers.filter(m => m.category === 'Core Admin');
+    const heads = teamMembers.filter(m => m.category === 'Head');
+    const cityLeads = teamMembers.filter(m => m.category === 'City Lead');
 
-    useEffect(() => {
-        setMounted(true);
-
-        const checkMobile = () => {
-            isMobileRef.current = window.innerWidth < 900;
-        };
-
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
-
-    useEffect(() => {
-        if (!mounted) return;
-
-        const namesContainer = namesContainerRef.current;
-        const imagesContainer = imagesContainerRef.current;
-        if (!namesContainer || !imagesContainer) return;
-
-        const nameElements = namesContainer.querySelectorAll<HTMLDivElement>(`.${styles.name}`);
-        const nameHeadings = namesContainer.querySelectorAll<HTMLHeadingElement>(`.${styles.name} h1`);
-
-        // Split text into individual letter spans
-        nameHeadings.forEach((heading) => {
-            const text = heading.textContent || '';
-            heading.innerHTML = '';
-
-            for (const char of text) {
-                const span = document.createElement('span');
-                span.className = styles.letter;
-                span.textContent = char === ' ' ? '\u00A0' : char;
-                heading.appendChild(span);
-            }
-        });
-
-        // Get default letters (first name element = "The Squad")
-        const defaultLetters = nameElements[0]?.querySelectorAll<HTMLSpanElement>(`.${styles.letter}`);
-        if (defaultLetters) {
-            gsap.set(defaultLetters, { y: '100%' });
-        }
-
-        const images = imagesRef.current;
-
-        // Animation functions
-        const showName = (index: number) => {
-            const img = images[index];
-            const correspondingName = nameElements[index + 1];
-            if (!img || !correspondingName) return;
-
-            const letters = correspondingName.querySelectorAll<HTMLSpanElement>(`.${styles.letter}`);
-
-            gsap.to(img, { width: 140, height: 140, duration: 0.5, ease: 'power4.out' });
-            gsap.to(letters, {
-                y: '-100%',
-                ease: 'power4.out',
-                duration: 0.75,
-                stagger: { each: 0.025, from: 'center' }
-            });
-        };
-
-        const hideName = (index: number) => {
-            const img = images[index];
-            const correspondingName = nameElements[index + 1];
-            if (!img || !correspondingName) return;
-
-            const letters = correspondingName.querySelectorAll<HTMLSpanElement>(`.${styles.letter}`);
-
-            gsap.to(img, { width: 70, height: 70, duration: 0.5, ease: 'power4.out' });
-            gsap.to(letters, {
-                y: '0%',
-                ease: 'power4.out',
-                duration: 0.75,
-                stagger: { each: 0.025, from: 'center' }
-            });
-        };
-
-        const showDefaultText = () => {
-            if (defaultLetters) {
-                gsap.to(defaultLetters, {
-                    y: '0%',
-                    ease: 'power4.out',
-                    duration: 0.75,
-                    stagger: { each: 0.025, from: 'center' }
-                });
-            }
-        };
-
-        const hideDefaultText = () => {
-            if (defaultLetters) {
-                gsap.to(defaultLetters, {
-                    y: '100%',
-                    ease: 'power4.out',
-                    duration: 0.75,
-                    stagger: { each: 0.025, from: 'center' }
-                });
-            }
-        };
-
-        // Set up event handlers
-        images.forEach((img, index) => {
-            if (!img) return;
-
-            if (isMobileRef.current) {
-                // MOBILE: Click/Tap to toggle animation
-                const handleClick = () => {
-                    setActiveIndex(prev => {
-                        if (prev === index) {
-                            // Same image tapped again - hide
-                            hideName(index);
-                            return null;
-                        } else {
-                            // Different image or first tap
-                            if (prev !== null) {
-                                hideName(prev); // Hide previous
-                            }
-                            showName(index);
-                            return index;
-                        }
-                    });
-                };
-
-                img.addEventListener('click', handleClick);
-                cleanupRef.current.push(() => img.removeEventListener('click', handleClick));
-            } else {
-                // DESKTOP: Hover animations
-                const handleMouseEnter = () => showName(index);
-                const handleMouseLeave = () => hideName(index);
-
-                img.addEventListener('mouseenter', handleMouseEnter);
-                img.addEventListener('mouseleave', handleMouseLeave);
-
-                cleanupRef.current.push(() => {
-                    img.removeEventListener('mouseenter', handleMouseEnter);
-                    img.removeEventListener('mouseleave', handleMouseLeave);
-                });
-            }
-        });
-
-        // Container hover for default text (desktop only)
-        if (!isMobileRef.current) {
-            imagesContainer.addEventListener('mouseenter', showDefaultText);
-            imagesContainer.addEventListener('mouseleave', hideDefaultText);
-
-            cleanupRef.current.push(() => {
-                imagesContainer.removeEventListener('mouseenter', showDefaultText);
-                imagesContainer.removeEventListener('mouseleave', hideDefaultText);
-            });
-        } else {
-            // On mobile, show default text initially
-            showDefaultText();
-        }
-
-        return () => {
-            cleanupRef.current.forEach(fn => fn());
-            cleanupRef.current = [];
-        };
-    }, [mounted]);
-
-    if (!mounted) {
-        return (
-            <section className={styles.team}>
-                <div className={styles.loading}>Loading...</div>
-            </section>
-        );
-    }
+    const MemberCard = ({ member }: { member: TeamMember }) => (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="group relative bg-card/50 backdrop-blur-sm border border-border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+        >
+            <div className="aspect-square relative overflow-hidden">
+                <Image
+                    src={member.image}
+                    alt={member.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+                    <div className="flex gap-4">
+                        {member.socials?.github && (
+                            <a href={member.socials.github} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-colors">
+                                <Github size={20} />
+                            </a>
+                        )}
+                        {member.socials?.linkedin && (
+                            <a href={member.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-colors">
+                                <Linkedin size={20} />
+                            </a>
+                        )}
+                        {member.socials?.instagram && (
+                            <a href={member.socials.instagram} target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-colors">
+                                <Instagram size={20} />
+                            </a>
+                        )}
+                    </div>
+                </div>
+            </div>
+            <div className="p-4 text-center">
+                <h3 className="font-bold text-lg">{member.name}</h3>
+                <p className="text-primary font-medium text-sm">{member.role}</p>
+                {member.subRole && (
+                    <p className="text-muted-foreground text-xs mt-1">{member.subRole}</p>
+                )}
+            </div>
+        </motion.div>
+    );
 
     return (
-        <section ref={sectionRef} className={styles.team}>
-            {/* Profile Images */}
-            <div ref={imagesContainerRef} className={styles.profileImages}>
-                {teamMembers.map((member, index) => (
-                    <div
-                        key={member.id}
-                        ref={(el) => { imagesRef.current[index] = el; }}
-                        className={`${styles.img} ${activeIndex === index ? styles.active : ''}`}
-                    >
-                        <Image
-                            src={member.image}
-                            alt={member.name}
-                            width={100}
-                            height={100}
-                            className={styles.imgInner}
-                            priority={index < 5}
-                        />
-                    </div>
-                ))}
+        <section className="min-h-screen pt-24 pb-12 px-4 container mx-auto">
+            <div className="text-center mb-16">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
+                    Meet The Team
+                </h1>
+                <p className="text-muted-foreground max-w-2xl mx-auto">
+                    The passionate individuals driving the DevPath Community forward.
+                </p>
             </div>
 
-            {/* Profile Names with GSAP Animation */}
-            <div ref={namesContainerRef} className={styles.profileNames}>
-                <div className={`${styles.name} ${styles.default}`}>
-                    <h1>The Squad</h1>
-                </div>
-                {teamMembers.map((member) => (
-                    <div key={`name-${member.id}`} className={styles.name}>
-                        <h1>{member.name}</h1>
+            <div className="space-y-16">
+                {/* Owner Section */}
+                {owner.length > 0 && (
+                    <div className="flex flex-col items-center">
+                        <div className="w-full max-w-xs">
+                            <MemberCard member={owner[0]} />
+                        </div>
                     </div>
-                ))}
+                )}
+
+                {/* Core Admins */}
+                {coreAdmins.length > 0 && (
+                    <div>
+                        <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+                            <span className="w-8 h-1 bg-primary rounded-full"></span>
+                            Core Admins
+                            <span className="w-8 h-1 bg-primary rounded-full"></span>
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                            {coreAdmins.map(member => (
+                                <MemberCard key={member.id} member={member} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Heads & Leads */}
+                {heads.length > 0 && (
+                    <div>
+                        <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+                            <span className="w-8 h-1 bg-purple-500 rounded-full"></span>
+                            Community Heads & Leads
+                            <span className="w-8 h-1 bg-purple-500 rounded-full"></span>
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                            {heads.map(member => (
+                                <MemberCard key={member.id} member={member} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* City Leads */}
+                {cityLeads.length > 0 && (
+                    <div>
+                        <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
+                            <span className="w-8 h-1 bg-cyan-500 rounded-full"></span>
+                            City Leads
+                            <span className="w-8 h-1 bg-cyan-500 rounded-full"></span>
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                            {cityLeads.map(member => (
+                                <MemberCard key={member.id} member={member} />
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );

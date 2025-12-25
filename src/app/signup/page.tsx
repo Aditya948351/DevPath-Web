@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
@@ -40,10 +40,13 @@ export default function SignupPage() {
         );
     }
 
-    if (user) {
-        router.push('/profile');
-        return null;
-    }
+    useEffect(() => {
+        if (user) {
+            router.push('/profile');
+        }
+    }, [user, router]);
+
+    if (user) return null;
 
     const checkIsAdminEmail = async (emailToCheck: string) => {
         if (!emailToCheck) return;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -14,8 +14,25 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const [showAdminKeyModal, setShowAdminKeyModal] = useState(false);
     const [isCheckingAdmin, setIsCheckingAdmin] = useState(false);
-    const { login, user, isLoading, logout } = useAuth();
+    const { login, user, isLoading, logout, isAdminVerified } = useAuth();
     const router = useRouter();
+
+    // Handle redirection for logged-in users
+    useEffect(() => {
+        if (!isLoading && user) {
+            if (user.role === 'admin') {
+                // If user is admin, ALWAYS require verification if not yet verified
+                if (!isAdminVerified && !showAdminKeyModal && !isCheckingAdmin) {
+                    setShowAdminKeyModal(true);
+                } else if (isAdminVerified) {
+                    router.push('/profile');
+                }
+            } else {
+                // If regular user, redirect to profile
+                router.push('/profile');
+            }
+        }
+    }, [user, isLoading, router, user?.role, isAdminVerified]);
 
     if (isLoading) {
         return (
@@ -23,12 +40,6 @@ export default function LoginPage() {
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
-    }
-
-    // Only redirect if user is logged in AND not waiting for admin key check AND not currently checking
-    if (user && !showAdminKeyModal && !isCheckingAdmin) {
-        router.push('/profile');
-        return null;
     }
 
     const handleLogin = async (e: React.FormEvent) => {

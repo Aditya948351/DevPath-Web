@@ -2,18 +2,23 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Github, LogIn, Menu, X, LogOut } from 'lucide-react';
+import { Flame, Github, LogIn, Menu, X, LogOut } from 'lucide-react';
 import logo from '@/assets/logo.png';
 import { useAuth } from '@/context/AuthContext';
 import { NotificationDropdown } from '@/components/NotificationDropdown';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import styles from './Navbar.module.css';
+import { calculateStreak } from '@/lib/streakUtils';
+import { useMemo } from 'react';
+import { useScroll, useSpring } from 'framer-motion';
 
 const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/paths', label: 'Learning Paths' },
+    { href: '/pathway', label: 'Pathway' },
     { href: '/community', label: 'Community' },
     { href: '/resources', label: 'Resources' },
     { href: '/events', label: 'Events' },
@@ -27,67 +32,92 @@ export default function Navbar() {
     const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
     const closeMobileMenu = () => setMobileMenuOpen(false);
 
+    const { currentStreak } = useMemo(() => calculateStreak(user?.loginDates), [user?.loginDates]);
+    const pathname = usePathname();
+
+    const { scrollYProgress } = useScroll();
+    const scaleX = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        restDelta: 0.001
+    });
+
+    if (pathname === '/ap') return null;
+
     return (
         <>
-            <nav className={styles.navbar}>
-                <Link href="/" className={styles.logo}>
-                    <div className={styles.logoIcon}>
-                        <Image src={logo} alt="DevPath Logo" width={32} height={32} />
+            <div className={styles.navbarContainer}>
+                <nav className={styles.navbar}>
+                    <Link href="/" className={styles.logo}>
+                        <div className={styles.logoIcon}>
+                            <Image src={logo} alt="DevPath Logo" width={32} height={32} className="rounded-full" />
+                        </div>
+                        <span className={styles.logoText}>DevPath</span>
+                    </Link>
+
+                    {/* Center Pill Navigation */}
+                    <div className={styles.navPill}>
+                        <div className={styles.navLinks}>
+                            {navLinks.map((link) => (
+                                <Link key={link.href} href={link.href} className={styles.navLink}>
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Scroll Progress Line attached to Pill */}
+                        <motion.div
+                            className={styles.progressBar}
+                            style={{ scaleX }}
+                        />
                     </div>
-                    DevPath
-                </Link>
 
-                {/* Desktop Navigation */}
-                <div className={styles.navLinks}>
-                    {navLinks.map((link) => (
-                        <Link key={link.href} href={link.href} className={styles.navLink}>
-                            {link.label}
-                        </Link>
-                    ))}
-                </div>
-
-                <div className={styles.actions}>
-                    <button className={styles.iconButton} aria-label="Select Language">
-                        <Globe size={20} />
-                    </button>
-                    <ThemeToggle />
-                    <a
-                        href="https://github.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.iconButton}
-                        aria-label="GitHub"
-                    >
-                        <Github size={20} />
-                    </a>
-
-                    <NotificationDropdown />
-
-                    {user ? (
-                        <Link href="/profile" className={styles.profileButton}>
-                            <div className={styles.avatar} style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--primary)' }}>
-                                {user.photoURL && <Image src={user.photoURL} alt={user.name || 'User'} width={24} height={24} className="rounded-full" />}
+                    <div className={styles.actions}>
+                        {user && (
+                            <div className="flex items-center gap-1 px-3 py-1.5 bg-orange-500/10 text-orange-500 rounded-full border border-orange-500/20" title="Current Streak">
+                                <Flame size={16} fill="currentColor" />
+                                <span className="text-sm font-bold">{currentStreak}</span>
                             </div>
-                            <span>{user.name}</span>
-                        </Link>
-                    ) : (
-                        <Link href="/login" className={styles.profileButton}>
-                            <LogIn size={16} />
-                            <span>Login</span>
-                        </Link>
-                    )}
+                        )}
+                        <ThemeToggle />
+                        <a
+                            href="https://github.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.iconButton}
+                            aria-label="GitHub"
+                        >
+                            <Github size={20} />
+                        </a>
 
-                    {/* Hamburger Menu Button (Mobile Only) */}
-                    <button
-                        className={styles.hamburger}
-                        onClick={toggleMobileMenu}
-                        aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                        aria-expanded={mobileMenuOpen}
-                    >
-                        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                    </button>
-                </div>
-            </nav>
+                        <NotificationDropdown />
+
+                        {user ? (
+                            <Link href="/profile" className={styles.profileButton}>
+                                <div className={styles.avatar} style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--primary)' }}>
+                                    {user.photoURL && <Image src={user.photoURL} alt={user.name || 'User'} width={24} height={24} className="rounded-full" />}
+                                </div>
+                                <span>{user.name}</span>
+                            </Link>
+                        ) : (
+                            <Link href="/login" className={styles.profileButton}>
+                                <LogIn size={16} />
+                                <span>Login</span>
+                            </Link>
+                        )}
+
+                        {/* Hamburger Menu Button (Mobile Only) */}
+                        <button
+                            className={styles.hamburger}
+                            onClick={toggleMobileMenu}
+                            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                            aria-expanded={mobileMenuOpen}
+                        >
+                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                        </button>
+                    </div>
+                </nav>
+            </div>
 
             {/* Mobile Menu Drawer */}
             <AnimatePresence>

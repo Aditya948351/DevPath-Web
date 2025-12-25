@@ -3,31 +3,132 @@ service cloud.firestore {
   match /databases/{database}/documents {
     // Helper function to check if user is super admin
     function isSuperAdmin() {
-      return request.auth != null && request.auth.token.email == 'ap8548328@gmail.com';
+      return request.auth != null && request.auth.token.email == 'devpathind.community@gmail.com';
     }
 
     // Admins collection
     match /admins/{adminId} {
       allow read: if true; // Public read
-      allow write: if isSuperAdmin(); // Only super admin can write
+      allow write: if isSuperAdmin() || (request.auth != null && request.auth.token.email == adminId);
     }
 
     // Members collection
     match /members/{userId} {
       allow read: if true; // Public read
-      allow write: if request.auth != null && request.auth.uid == userId; // Owner can write
+      // userId is now the UID
+      allow write: if (request.auth != null && request.auth.uid == userId) || isSuperAdmin(); // Owner or Super Admin can write
+      allow update: if request.auth != null && (
+        request.auth.uid == userId || 
+        isSuperAdmin() ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers', 'points'])) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following']))
+      );
+
+      // Projects Subcollection
+      match /projects/{projectId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow update: if request.auth != null && (
+          request.auth.uid == userId || 
+          isSuperAdmin() || 
+          // Allow any user to update 'stars' or 'likes' field only
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount'])) ||
+          // Allow any user to update 'followers' field (for Follow feature)
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers']))
+        );
+        allow delete: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
+      }
+
+      // Badges Subcollection
+      match /badges/{badgeId} {
+        allow read: if true;
+        allow write: if isSuperAdmin() || (request.auth != null && request.auth.uid == userId);
+      }
+    }
+
+    // Earned Badges collection
+    match /earned_badges/{badgeId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Leaderboard collection
+    match /leaderboard/{userId} {
+      allow read: if true;
+      allow write: if (request.auth != null && request.auth.uid == userId) || isSuperAdmin(); // Owner or Super Admin can write
+      allow update: if request.auth != null && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points']))
+      );
+    }
+
+    // Superadmin Keys collection
+    match /superadmin_keys/{keyId} {
+      allow read: if true; // Public read so signup page can verify
+      allow write: if isSuperAdmin(); // Only super admin can change the key
     }
 
     // Admin Keys collection
     match /admin_keys/{keyId} {
-      allow read: if true; // Public read so signup page can verify
-      allow write: if isSuperAdmin(); // Only super admin can change the key
+      allow read: if true; // Public read so admin login can verify
+      allow write: if isSuperAdmin();
     }
 
     // Roles collection
     match /roles/{roleId} {
       allow read: if true; // Public read to display roles
       allow write: if isSuperAdmin(); // Only super admin can manage roles
+    }
+
+    // Projects collection
+    match /projects/{projectId} {
+      allow read: if true; // Public read
+      allow create: if request.auth != null; // Authenticated users can create
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.userId || 
+        isSuperAdmin() ||
+        // Allow any user to update 'stars' or 'likes' field only
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount']))
+      ); 
+      allow delete: if request.auth != null && (request.auth.uid == resource.data.userId || isSuperAdmin()); // Owner or Super Admin can delete
+    }
+
+    // Discussions collection
+    match /discussions/{discussionId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        resource.data.authorId == request.auth.uid || 
+        isSuperAdmin() ||
+        // Allow any user to update reactions or replyCount
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions', 'replyCount']))
+      );
+      allow delete: if request.auth != null && (resource.data.authorId == request.auth.uid || isSuperAdmin());
+      
+      match /replies/{replyId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow update, delete: if request.auth != null && (resource.data.authorId == request.auth.uid || isSuperAdmin());
+      }
+    }
+    // Explicit Collection Group Rule for Projects
+    match /{path=**}/projects/{projectId} {
+      allow read: if true;
+    }
+
+    // Helper function to check if user is in admins collection
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.token.email));
+    }
+
+    // Events collection
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || isAdmin();
+    }
+
+    // Admin Notifications collection
+    match /admin_notifications/{notificationId} {
+      allow read, write: if isSuperAdmin() || isAdmin();
     }
   }
 }

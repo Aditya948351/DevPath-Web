@@ -1,20 +1,106 @@
 export interface TeamMember {
     id: number;
     name: string;
+    role: string;
+    subRole?: string;
     image: string;
+    category: 'Owner' | 'Core Admin' | 'Head' | 'City Lead';
+    socials?: {
+        github?: string;
+        linkedin?: string;
+        instagram?: string;
+    };
 }
 
 // Get basePath for production deployment
 const basePath = process.env.NODE_ENV === 'production' ? '/DevPath' : '';
 
+// Helper to generate placeholder image
+const getPlaceholder = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
+
 export const teamMembers: TeamMember[] = [
-    { id: 1, name: "Colin", image: `${basePath}/team/member-1.jpeg` },
-    { id: 2, name: "Liam", image: `${basePath}/team/member-2.jpeg` },
-    { id: 3, name: "Tabitha", image: `${basePath}/team/member-3.jpeg` },
-    { id: 4, name: "Tyson", image: `${basePath}/team/member-4.jpeg` },
-    { id: 5, name: "Max", image: `${basePath}/team/member-5.jpeg` },
-    { id: 6, name: "Everest", image: `${basePath}/team/member-6.jpeg` },
-    { id: 7, name: "Simon", image: `${basePath}/team/member-7.jpeg` },
-    { id: 8, name: "Gideon", image: `${basePath}/team/member-8.jpeg` },
-    { id: 9, name: "Benton", image: `${basePath}/team/member-9.jpeg` },
+    // Owner
+    {
+        id: 1,
+        name: "Aditya Patil",
+        role: "Owner",
+        subRole: "Community Head",
+        image: getPlaceholder("Aditya Patil"),
+        category: "Owner",
+        socials: {
+            github: "https://github.com/aditya948351"
+        }
+    },
+    // Core Admins
+    {
+        id: 2,
+        name: "Application Pending",
+        role: "Technical Head",
+        image: getPlaceholder("Application Pending"),
+        category: "Head"
+    },
+    {
+        id: 3,
+        name: "Deb Mukherjee",
+        role: "Core Admin",
+        subRole: "Partnership Head",
+        image: getPlaceholder("Deb Mukherjee"),
+        category: "Core Admin"
+    },
+    {
+        id: 4,
+        name: "Pranav Khaire",
+        role: "Core Admin",
+        subRole: "Content & Graphics Lead",
+        image: getPlaceholder("Pranav Khaire"),
+        category: "Core Admin"
+    },
+    // Heads & Leads
+    {
+        id: 5,
+        name: "Varun Mulay",
+        role: "AIML Lead",
+        image: getPlaceholder("Varun Mulay"),
+        category: "Head"
+    },
+    {
+        id: 6,
+        name: "Sakshi Rote",
+        role: "Management Head",
+        image: getPlaceholder("Sakshi Rote"),
+        category: "Head"
+    },
+    // City Leads
+    {
+        id: 7,
+        name: "Amitosh Biswas",
+        role: "City Lead",
+        subRole: "Bangalore",
+        image: getPlaceholder("Amitosh Biswas"),
+        category: "City Lead"
+    },
+    {
+        id: 8,
+        name: "Aditya Patil",
+        role: "City Lead",
+        subRole: "Pune",
+        image: getPlaceholder("Aditya Patil"),
+        category: "City Lead"
+    },
+    {
+        id: 9,
+        name: "Prince",
+        role: "City Lead",
+        subRole: "Nagpur",
+        image: getPlaceholder("Prince"),
+        category: "City Lead"
+    },
+    {
+        id: 10,
+        name: "Deb Mukherjee",
+        role: "City Lead",
+        subRole: "Kolkata",
+        image: getPlaceholder("Deb Mukherjee"),
+        category: "City Lead"
+    }
 ];

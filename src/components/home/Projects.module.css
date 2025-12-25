@@ -1,177 +1,64 @@
 .projects {
-    padding: 120px 24px;
-    background: var(--bg-primary);
+    padding: 4rem 0;
+    overflow: hidden;
 }
 
 .header {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
 }
 
 .title {
-    font-size: 48px;
+    font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--text-primary);
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, #a5b4fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-    font-size: 18px;
-    color: var(--text-secondary);
+    color: var(--muted-foreground);
+    font-size: 1.1rem;
+}
+
+.scrollContainer {
+    width: 100%;
+    overflow-x: auto;
+    padding: 2rem 0;
+    perspective: 1000px;
+    /* Hide scrollbar */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scrollContainer::-webkit-scrollbar {
+    display: none;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 300px);
-    gap: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
+    display: flex;
+    gap: 2rem;
+    padding: 0 4rem;
+    /* Add padding to sides so first/last items aren't cut off */
+    width: max-content;
 }
 
-.projectCard {
-    position: relative;
-    border-radius: 20px;
-    overflow: hidden;
-    border: 1px solid var(--glass-border);
-    background: var(--bg-secondary);
+.projectWrapper {
+    width: 350px;
+    flex-shrink: 0;
     transition: all 0.3s ease;
-    group: project;
 }
 
-.projectCard:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
-}
-
-/* Bento Grid Layout */
-.projectCard:nth-child(1) {
-    grid-column: span 2;
-}
-
-.projectCard:nth-child(2) {
-    grid-column: span 1;
-}
-
-.projectCard:nth-child(3) {
-    grid-column: span 1;
-}
-
-.projectCard:nth-child(4) {
-    grid-column: span 1;
-}
-
-.projectCard:nth-child(5) {
-    grid-column: span 2;
-}
-
-.projectCard:nth-child(6) {
-    grid-column: span 1;
-}
-
-.thumbnail {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.projectCard:hover .thumbnail {
-    transform: scale(1.05);
-}
-
-.overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 24px;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
-}
-
-.projectCard:hover .overlay {
-    transform: translateY(0);
-}
-
-.projectTitle {
-    font-size: 20px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 8px;
-}
-
-.author {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.avatar {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--glass-bg);
-}
-
-.authorName {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.tags {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.tag {
-    padding: 4px 10px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    font-size: 12px;
-    color: white;
-    backdrop-filter: blur(4px);
-}
-
-.stats {
-    display: flex;
-    gap: 16px;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease 0.1s;
-}
-
-.projectCard:hover .stats {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.stat {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-@media (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: auto;
+@media (max-width: 768px) {
+    .projectWrapper {
+        width: 300px;
     }
 
-    .projectCard:nth-child(n) {
-        grid-column: span 1;
-        height: 300px;
-    }
-}
-
-@media (max-width: 640px) {
     .grid {
-        grid-template-columns: 1fr;
+        padding: 0 2rem;
     }
 }

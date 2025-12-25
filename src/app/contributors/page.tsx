@@ -5,20 +5,13 @@ import Button from '@/components/ui/Button';
 import styles from './Contributors.module.css';
 
 const contributors = [
-    { name: "Sarah Chen", handle: "@sarahc", contributions: 142, types: ["code", "docs"], avatar: "SC" },
-    { name: "Mike Ross", handle: "@mikeross", contributions: 89, types: ["code"], avatar: "MR" },
-    { name: "Alex Kim", handle: "@akim", contributions: 64, types: ["design", "community"], avatar: "AK" },
-    { name: "Emma Wilson", handle: "@ewilson", contributions: 56, types: ["docs"], avatar: "EW" },
-    { name: "David Park", handle: "@dpark", contributions: 42, types: ["code", "community"], avatar: "DP" },
-    { name: "Lisa Wang", handle: "@lwang", contributions: 38, types: ["design"], avatar: "LW" },
-    { name: "James Bond", handle: "@jbond", contributions: 31, types: ["code"], avatar: "JB" },
-    { name: "Nina Patel", handle: "@npatel", contributions: 27, types: ["docs"], avatar: "NP" },
+    { name: "Aditya Patil", handle: "@adityapatil", contributions: 500, types: ["code", "design", "community"], avatar: "AP" },
+    { name: "Aditya Akolkar", handle: "@adityaakolkar", contributions: 500, types: ["code", "docs", "community"], avatar: "AA" },
 ];
 
 const topContributors = [
-    { name: "Jessica Lee", handle: "@jlee", contributions: 324, rank: 2, avatar: "JL" },
-    { name: "Ryan Dahl", handle: "@ryand", contributions: 512, rank: 1, avatar: "RD" },
-    { name: "Tom Cook", handle: "@tcook", contributions: 256, rank: 3, avatar: "TC" },
+    { name: "Aditya Patil", handle: "@adityapatil", contributions: 500, rank: 1, avatar: "AP" },
+    { name: "Aditya Akolkar", handle: "@adityaakolkar", contributions: 500, rank: 2, avatar: "AA" },
 ];
 
 export default function ContributorsPage() {

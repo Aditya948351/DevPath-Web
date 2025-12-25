@@ -4,6 +4,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const nextConfig: NextConfig = {
   basePath: "",
+  output: 'export',
   /* config options here */
   devIndicators: {
     // @ts-ignore - buildActivity is valid but missing in type definition
@@ -12,7 +13,7 @@ const nextConfig: NextConfig = {
     appIsrStatus: false,
   },
   reactCompiler: true,
-  output: "export",
+
   images: {
     unoptimized: true,
   },

@@ -6,7 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { GamificationProvider } from "@/context/GamificationContext";
 import { RealTimeProvider } from "@/context/RealTimeContext";
 import { AnimatedBackground } from '@/components/AnimatedBackground';
-import { ScrollProgress } from '@/components/ScrollProgress';
+
 import BackgroundMesh from '@/components/layout/BackgroundMesh';
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
@@ -20,10 +20,10 @@ const barlowCondensed = Barlow_Condensed({
 });
 
 export const metadata: Metadata = {
-  title: "DevPath | Master Your Developer Journey",
+  title: "DevPath",
   description: "Join 50,000+ developers accelerating their coding skills through structured paths, real projects, and an active community.",
   icons: {
-    icon: '/logo.png',
+    icon: '/DevPath-logo.png',
   },
 };
 
@@ -44,7 +44,6 @@ export default function RootLayout({
           <AuthProvider>
             <GamificationProvider>
               <RealTimeProvider>
-                <ScrollProgress />
                 <AnimatedBackground />
                 {/* <BackgroundMesh /> */}
                 <Navbar />

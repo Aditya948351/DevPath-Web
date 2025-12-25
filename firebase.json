@@ -9,6 +9,10 @@
     ],
     "rewrites": [
       {
+        "source": "/u/**",
+        "destination": "/u/public.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
