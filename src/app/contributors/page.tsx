@@ -5,12 +5,12 @@ import Button from '@/components/ui/Button';
 import styles from './Contributors.module.css';
 
 const contributors = [
-    { name: "Aditya Patil", handle: "@adityapatil", contributions: 500, types: ["code", "design", "community"], avatar: "AP" },
+    { name: "Aditya Patil", handle: "@Aditya948351", contributions: 500, types: ["code", "design", "community"], avatar: "AP" },
     { name: "Aditya Akolkar", handle: "@adityaakolkar", contributions: 500, types: ["code", "docs", "community"], avatar: "AA" },
 ];
 
 const topContributors = [
-    { name: "Aditya Patil", handle: "@adityapatil", contributions: 500, rank: 1, avatar: "AP" },
+    { name: "Aditya Patil", handle: "@Aditya948351", contributions: 500, rank: 1, avatar: "AP" },
     { name: "Aditya Akolkar", handle: "@adityaakolkar", contributions: 500, rank: 2, avatar: "AA" },
 ];
 
