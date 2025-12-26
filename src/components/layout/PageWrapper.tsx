@@ -15,7 +15,7 @@ export default function PageWrapper({
             style={{
                 position: "relative",
                 zIndex: 1,
-                paddingTop: isHome ? 0 : "130px",
+                paddingTop: isHome ? 0 : "100px",
             }}
         >
             {children}

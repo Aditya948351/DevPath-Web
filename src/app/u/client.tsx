@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { getEmbedUrl } from '@/lib/utils';
@@ -11,6 +10,8 @@ import styles from '@/components/profile/Profile.module.css';
 import Rewards from '@/components/profile/Rewards';
 import FollowButton from '@/components/profile/FollowButton';
 import LoginHeatmap from '@/components/profile/LoginHeatmap';
+import { useSearchParams } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 interface PublicUser {
     id?: string;
@@ -59,11 +60,8 @@ interface Project {
     createdAt: any;
 }
 
-import { useParams } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-
-export default function ProfileClient() {
-    const params = useParams();
+function ProfileContent() {
+    const searchParams = useSearchParams();
     const { user: currentUser } = useAuth();
     const [uid, setUid] = useState<string | null>(null);
     const [user, setUser] = useState<PublicUser | null>(null);
@@ -81,16 +79,11 @@ export default function ProfileClient() {
     };
 
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const pathParts = window.location.pathname.split('/');
-            const urlUid = pathParts[pathParts.length - 1];
-            if (urlUid && urlUid !== 'public') {
-                setUid(urlUid);
-            } else if (params?.uid && params.uid !== 'public') {
-                setUid(params.uid as string);
-            }
+        const paramUid = searchParams.get('uid');
+        if (paramUid) {
+            setUid(paramUid);
         }
-    }, [params]);
+    }, [searchParams]);
 
     useEffect(() => {
         const fetchUserAndProjects = async () => {
@@ -138,7 +131,6 @@ export default function ProfileClient() {
                         return;
                     }
 
-                    // Check if user is an admin (if not already marked)
                     // Check if user is an admin (if not already marked)
                     if (userData.role !== 'admin') {
                         // 1. Try by Email (if available)
@@ -759,5 +751,13 @@ export default function ProfileClient() {
                 )
             }
         </section >
+    );
+}
+
+export default function ProfileClient() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>}>
+            <ProfileContent />
+        </Suspense>
     );
 }

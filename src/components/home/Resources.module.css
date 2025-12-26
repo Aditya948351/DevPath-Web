@@ -1,5 +1,5 @@
 .resources {
-    padding: 96px 24px;
+    padding: 24px 24px;
     background: transparent;
     /* Changed from var(--bg-primary) to transparent for mesh visibility */
     position: relative;

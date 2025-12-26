@@ -38,8 +38,7 @@ export default function PathwayPage() {
 
                             if (memberSnap.exists() && memberSnap.data().name) {
                                 const newData = { name: memberSnap.data().name, photoURL: memberSnap.data().photoURL };
-                                // Update Leaderboard Doc permanently
-                                updateDoc(doc(db, 'leaderboard', entry.id), newData).catch(console.error);
+                                // Only update local state, do not write to DB as it requires admin permissions
                                 return { ...entry, ...newData };
                             }
 
@@ -51,8 +50,7 @@ export default function PathwayPage() {
                                 const adminData = adminsSnap.docs[0].data();
                                 if (adminData.name) {
                                     const newData = { name: adminData.name, photoURL: adminData.photoURL || adminData.image };
-                                    // Update Leaderboard Doc permanently
-                                    updateDoc(doc(db, 'leaderboard', entry.id), newData).catch(console.error);
+                                    // Only update local state
                                     return { ...entry, ...newData };
                                 }
                             }

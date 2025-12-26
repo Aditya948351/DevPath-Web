@@ -21,7 +21,7 @@ export function calculateStreak(loginDates: string[] = []) {
 
     if (sortedDates.includes(today)) {
         current = 1;
-        let checkDate = new Date();
+        const checkDate = new Date();
         checkDate.setDate(checkDate.getDate() - 1);
 
         while (sortedDates.includes(getISTDateString(checkDate))) {
@@ -29,7 +29,7 @@ export function calculateStreak(loginDates: string[] = []) {
             checkDate.setDate(checkDate.getDate() - 1);
         }
     } else if (sortedDates.includes(yesterday)) {
-        let checkDate = new Date();
+        const checkDate = new Date();
         checkDate.setDate(checkDate.getDate() - 1);
         let streak = 0;
 

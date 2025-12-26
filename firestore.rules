@@ -30,7 +30,8 @@ service cloud.firestore {
         request.auth.uid == userId || 
         isSuperAdmin() ||
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers', 'points'])) ||
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following'])) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starredResources']))
       );
 
       // Projects Subcollection
@@ -67,6 +68,18 @@ service cloud.firestore {
       allow write: if (request.auth != null && request.auth.uid == userId) || isSuperAdmin(); // Owner or Super Admin can write
       allow update: if request.auth != null && (
         (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points']))
+      );
+    }
+
+    // Resources collection
+    match /resources/{resourceId} {
+      allow read: if true;
+      // Allow create/write if Super Admin (for manual addition)
+      allow write: if isSuperAdmin(); 
+      // Allow update of starCount by authenticated users
+      allow update: if request.auth != null && (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['starCount']) ||
+        isSuperAdmin()
       );
     }
 

@@ -238,7 +238,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     const today = getISTDateString(new Date());
                     let loginDates = userData.loginDates || [];
                     let shouldUpdate = false;
-                    const updateData: any = {};
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const updateData: Record<string, any> = {};
                     let pointsDelta = 0;
 
                     // 1. Check if new day login
@@ -460,7 +461,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const batch = (await import('firebase/firestore')).writeBatch(db);
             const arrayRemove = (await import('firebase/firestore')).arrayRemove;
             const increment = (await import('firebase/firestore')).increment;
-            const { POINTS } = await import('@/lib/points');
+
 
             // Update current user's following list
             const collectionName = user.role === 'admin' ? 'admins' : 'members';

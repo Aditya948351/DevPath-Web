@@ -17,7 +17,7 @@ import { useScroll, useSpring } from 'framer-motion';
 
 const navLinks = [
     { href: '/', label: 'Home' },
-    { href: '/paths', label: 'Learning Paths' },
+    { href: '/courses', label: 'Courses' },
     { href: '/pathway', label: 'Pathway' },
     { href: '/community', label: 'Community' },
     { href: '/resources', label: 'Resources' },
@@ -60,7 +60,12 @@ export default function Navbar() {
                     <div className={styles.navPill}>
                         <div className={styles.navLinks}>
                             {navLinks.map((link) => (
-                                <Link key={link.href} href={link.href} className={styles.navLink}>
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className={`${styles.navLink} ${link.label === 'Courses' ? 'text-xs' : ''}`}
+                                    style={{ fontSize: link.label === 'Courses' ? '0.75rem' : undefined }}
+                                >
                                     {link.label}
                                 </Link>
                             ))}
@@ -82,7 +87,7 @@ export default function Navbar() {
                         )}
                         <ThemeToggle />
                         <a
-                            href="https://github.com"
+                            href="https://github.com/devpathindcommunity-india/DevPath-Web"
                             target="_blank"
                             rel="noopener noreferrer"
                             className={styles.iconButton}
@@ -94,16 +99,26 @@ export default function Navbar() {
                         <NotificationDropdown />
 
                         {user ? (
-                            <Link href="/profile" className={styles.profileButton}>
-                                <div className={styles.avatar} style={{ width: 24, height: 24, borderRadius: '50%', background: 'var(--primary)' }}>
-                                    {user.photoURL && <Image src={user.photoURL} alt={user.name || 'User'} width={24} height={24} className="rounded-full" />}
-                                </div>
-                                <span>{user.name}</span>
+                            <Link href="/profile" className={styles.profileAvatar} title={user.name || 'Profile'}>
+                                {user.photoURL ? (
+                                    <Image
+                                        src={user.photoURL}
+                                        alt={user.name || 'User'}
+                                        width={36}
+                                        height={36}
+                                        className="rounded-full"
+                                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white font-bold text-sm">
+                                        {user.name?.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
                             </Link>
                         ) : (
                             <Link href="/login" className={styles.profileButton}>
                                 <LogIn size={16} />
-                                <span>Login</span>
+                                <span className="hidden sm:inline">Login</span>
                             </Link>
                         )}
 

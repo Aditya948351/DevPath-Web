@@ -14,8 +14,7 @@ export interface TeamMember {
     managedBy?: string;
 }
 
-// Get basePath for production deployment
-const basePath = process.env.NODE_ENV === 'production' ? '/DevPath' : '';
+
 
 // Helper to generate placeholder image
 const getPlaceholder = (name: string) => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
@@ -70,7 +69,7 @@ export const teamMembers: TeamMember[] = [
         id: 6,
         name: "Sakshi Rote",
         role: "Management Head",
-        image: getPlaceholder("Sakshi Rote"),
+        image: "https://res.cloudinary.com/dsj0vaews/image/upload/v1766775568/pwhvez0jzi8frqq10sia.jpg",
         category: "Head"
     },
     {

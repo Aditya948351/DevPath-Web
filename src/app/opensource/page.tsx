@@ -66,7 +66,7 @@ export default function OpenSourcePage() {
     };
 
     return (
-        <div className="min-h-screen bg-background pt-24 pb-12 px-4 md:px-8">
+        <div className="min-h-screen bg-background pb-12 px-4 md:px-8">
             <div className="max-w-7xl mx-auto space-y-16">
 
                 {/* Hero Section */}

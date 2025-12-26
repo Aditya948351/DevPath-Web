@@ -88,8 +88,9 @@
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
-    padding: 8px 16px;
+    padding: 8px 12px;
     border-radius: 9999px;
+    white-space: nowrap;
 }
 
 .navLink:hover {
@@ -287,6 +288,28 @@
 
 .mobileProfileButton:hover {
     background: rgba(255, 255, 255, 0.1);
+}
+
+.profileAvatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 50%;
+    background: #3b82f6;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    overflow: hidden;
+}
+
+.profileAvatar:hover {
+    background: #2563eb;
+    transform: translateY(-1px);
 }
 
 /* Mobile Responsive Styles */

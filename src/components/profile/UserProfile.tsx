@@ -146,7 +146,7 @@ export default function UserProfile() {
 
     const handleShareProfile = () => {
         if (!user) return;
-        const url = `${window.location.origin}/u/${user.uid}`;
+        const url = `${window.location.origin}/u?uid=${user.uid}`;
         navigator.clipboard.writeText(url);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
@@ -231,7 +231,7 @@ export default function UserProfile() {
     }
 
     return (
-        <div className="min-h-screen bg-background text-foreground pt-12 pb-8 px-4 md:px-8">
+        <div className="min-h-screen bg-background text-foreground pb-8 px-4 md:px-8">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
 
                 {/* LEFT SIDEBAR */}
@@ -630,7 +630,7 @@ export default function UserProfile() {
                                             <h4 className="font-bold truncate">{u.name}</h4>
                                             <p className="text-xs text-muted-foreground truncate">@{u.email?.split('@')[0]}</p>
                                         </div>
-                                        <a href={`/u/${u.uid}`} className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full hover:bg-primary/20">
+                                        <a href={`/u?uid=${u.uid}`} className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full hover:bg-primary/20">
                                             View
                                         </a>
                                     </div>

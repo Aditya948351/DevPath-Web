@@ -21,7 +21,7 @@ export const wikiContent: Record<string, WikiArticle> = {
                 </p>
                 <h2>What is DevPath?</h2>
                 <p>
-                    DevPath is more than just a learning platform. It's an ecosystem where you can:
+                    DevPath is more than just a learning platform. It&apos;s an ecosystem where you can:
                 </p>
                 <ul>
                     <li>Follow expert-curated <strong>Learning Paths</strong> to master new stacks.</li>
@@ -71,7 +71,7 @@ export const wikiContent: Record<string, WikiArticle> = {
                     <li><strong>Curriculum Design:</strong> Create and update Learning Paths to reflect the latest industry trends and best practices.</li>
                     <li><strong>Project Review:</strong> Evaluate project submissions, providing constructive feedback to help members improve their code.</li>
                     <li><strong>Technical Workshops:</strong> Conduct deep-dive sessions on advanced topics, tools, and frameworks.</li>
-                    <li><strong>Open Source Maintainers:</strong> Oversee DevPath's open-source repositories, reviewing PRs and guiding contributors.</li>
+                    <li><strong>Open Source Maintainers:</strong> Oversee DevPath&apos;s open-source repositories, reviewing PRs and guiding contributors.</li>
                 </ul>
             </>
         )
@@ -105,7 +105,7 @@ export const wikiContent: Record<string, WikiArticle> = {
         content: (
             <>
                 <p>
-                    HackFiesta is DevPath's flagship annual hackathon, bringing together the brightest minds to innovate and build solutions for real-world problems.
+                    HackFiesta is DevPath&apos;s flagship annual hackathon, bringing together the brightest minds to innovate and build solutions for real-world problems.
                 </p>
                 <h2>Event Highlights</h2>
                 <ul>
@@ -154,12 +154,12 @@ export const wikiContent: Record<string, WikiArticle> = {
                 </p>
                 <h2>Our Philosophy</h2>
                 <p>
-                    We encourage all members to contribute to open source, whether it's DevPath's own repositories or other popular projects. It's the best way to learn real-world software development.
+                    We encourage all members to contribute to open source, whether it&apos;s DevPath&apos;s own repositories or other popular projects. It&apos;s the best way to learn real-world software development.
                 </p>
                 <h2>How to Get Involved</h2>
                 <ul>
                     <li><strong>Explore Repos:</strong> Check out our <a href="/opensource" className="text-primary hover:underline">Open Source Dashboard</a> to find active projects.</li>
-                    <li><strong>Pick an Issue:</strong> Look for "good first issue" tags if you are just starting out.</li>
+                    <li><strong>Pick an Issue:</strong> Look for &quot;good first issue&quot; tags if you are just starting out.</li>
                     <li><strong>Submit a PR:</strong> Fork the repo, make your changes, and submit a Pull Request. Our maintainers will review it.</li>
                 </ul>
                 <h2>Rewards</h2>

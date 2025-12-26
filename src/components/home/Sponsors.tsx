@@ -61,7 +61,7 @@ export default function Sponsors() {
 
             {/* Community Sponsors */}
             <div className="mb-12">
-                <h3 className="text-xl font-semibold text-center mb-8 text-muted-foreground">Community Sponsors</h3>
+                <h3 className="text-xl font-semibold text-center mb-8 text-muted-foreground">Trusted By</h3>
                 <div className={styles.grid}>
                     {communitySponsors.map((sponsor, index) => (
                         <a

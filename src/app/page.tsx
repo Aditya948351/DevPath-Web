@@ -4,7 +4,9 @@ import { SectionEntrance } from '@/components/ui/SectionEntrance';
 import { FloatingParticles } from '@/components/FloatingParticles';
 import Events from '@/components/home/Events';
 import Sponsors from '@/components/home/Sponsors';
-import LatestEventsHighlight from '@/components/home/LatestEventsHighlight';
+
+import Mission from '@/components/home/Mission';
+import CodingNews from '@/components/home/CodingNews';
 
 export default function Home() {
   return (
@@ -12,7 +14,13 @@ export default function Home() {
       <FloatingParticles />
       <Hero />
 
-      <LatestEventsHighlight />
+
+
+      <SectionEntrance delay={0.1}>
+        <CodingNews />
+      </SectionEntrance>
+
+
 
       <div id="events-section">
         <SectionEntrance delay={0.2}>
@@ -29,6 +37,10 @@ export default function Home() {
           <Sponsors />
         </SectionEntrance>
       </div>
+
+      <SectionEntrance delay={0.2}>
+        <Mission />
+      </SectionEntrance>
     </main>
   );
 }
