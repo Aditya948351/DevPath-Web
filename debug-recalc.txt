@@ -1,4 +1,0 @@
-Starting points recalculation...
-Found 0 members.
-
-Recalculation complete for all members.
