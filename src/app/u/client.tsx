@@ -5,7 +5,7 @@ import { doc, getDoc, collection, query, where, getDocs, orderBy, updateDoc, arr
 import { db } from '@/lib/firebase';
 import { getEmbedUrl } from '@/lib/utils';
 import { teamMembers } from '@/data/team';
-import { Trophy, Flame, Star, Target, MapPin, Link as LinkIcon, Calendar, Phone, Github, Instagram, Linkedin, CheckCircle, User as UserIcon, Heart, Share2, Video, Image as ImageIcon, Globe, Check, Users, Shield, X } from 'lucide-react';
+import { Trophy, Flame, Star, Target, MapPin, Link as LinkIcon, Calendar, Phone, Github, Instagram, Linkedin, CheckCircle, User as UserIcon, Heart, Share2, Video, Image as ImageIcon, Globe, Check, Users, Shield, X, GitMerge, BookOpen, Plus } from 'lucide-react';
 import styles from '@/components/profile/Profile.module.css';
 import Rewards from '@/components/profile/Rewards';
 import FollowButton from '@/components/profile/FollowButton';
@@ -46,6 +46,19 @@ interface PublicUser {
     points?: number;
     streak?: number;
     achievements?: string[];
+    githubStats?: {
+        connected: boolean;
+        username?: string;
+        repos?: number;
+        totalStars?: number;
+        followers?: number;
+        following?: number;
+        bio?: string;
+        company?: string;
+        location?: string;
+        createdAt?: string;
+        recentActivity?: any[];
+    };
 }
 
 interface Project {
@@ -108,21 +121,30 @@ function ProfileContent() {
                     }
                 }
 
+                let isFromAdminCollection = false;
+
                 // 3. If still not found, try 'admins' collection
                 if (!userDoc.exists()) {
                     userDoc = await getDoc(doc(db, 'admins', uid));
-                    if (!userDoc.exists()) {
+                    if (userDoc.exists()) {
+                        isFromAdminCollection = true;
+                    } else {
                         const q = query(collection(db, 'admins'), where('uid', '==', uid));
                         const querySnapshot = await getDocs(q);
                         if (!querySnapshot.empty) {
                             userDoc = querySnapshot.docs[0];
                             userId = userDoc.id;
+                            isFromAdminCollection = true;
                         }
                     }
                 }
 
                 if (userDoc.exists()) {
                     userData = { id: userId, ...userDoc.data() } as PublicUser;
+
+                    if (isFromAdminCollection) {
+                        userData.role = 'admin';
+                    }
 
                     // Privacy Check
                     if (userData.privacySettings?.isPublic === false) {
@@ -410,7 +432,7 @@ function ProfileContent() {
                             </div>
 
                             <div className="flex flex-wrap gap-3 mt-4">
-                                {user.id && <FollowButton targetUserId={user.id} />}
+                                {user.id && <FollowButton targetUserId={user.id} targetRole={user.role} targetEmail={user.email} />}
                                 <button
                                     onClick={handleShareProfile}
                                     className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-all duration-200 font-medium text-sm"
@@ -450,6 +472,99 @@ function ProfileContent() {
                         <div className={styles.statValue}>{user.following?.length || 0}</div>
                         <div className={styles.statLabel}><UserIcon size={14} /> Following</div>
                     </div>
+                </div>
+
+                {/* GitHub Stats Section */}
+                <div className="mt-6">
+                    {user.githubStats?.connected ? (
+                        <div className="bg-card border border-border rounded-xl p-6">
+                            <h3 className="text-xl font-bold flex items-center gap-2 mb-4">
+                                <Github className="text-primary" size={20} /> GitHub Activity
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <Globe className="mb-2 text-primary h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.repos || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Repositories</span>
+                                </div>
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <Star className="mb-2 text-yellow-500 h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.totalStars || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Stars</span>
+                                </div>
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <Users className="mb-2 text-blue-500 h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.followers || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Followers</span>
+                                </div>
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <UserIcon className="mb-2 text-purple-500 h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.following || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Following</span>
+                                </div>
+                            </div>
+
+                            {/* GitHub Readme Stats & Streak */}
+                            {user.githubStats.username && (
+                                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="w-full">
+                                        <picture>
+                                            <source media="(prefers-color-scheme: dark)" srcSet={`https://github-readme-stats-salesp07.vercel.app/api?username=${user.githubStats.username}&count_private=true&show_icons=true&title_color=00bfbf&icon_color=00bfbf&text_color=c9d1d9&bg_color=0d1117&rank_icon=github&border_radius=20&hide_border=true`} />
+                                            <source media="(prefers-color-scheme: light)" srcSet={`https://github-readme-stats-salesp07.vercel.app/api?username=${user.githubStats.username}&count_private=true&show_icons=true&title_color=000000&icon_color=000000&text_color=000000&bg_color=ffffff&rank_icon=github&border_radius=20&hide_border=true`} />
+                                            <img alt="GitHub Stats" src={`https://github-readme-stats-salesp07.vercel.app/api?username=${user.githubStats.username}&count_private=true&show_icons=true&title_color=00bfbf&icon_color=00bfbf&text_color=c9d1d9&bg_color=0d1117&rank_icon=github&border_radius=20&hide_border=true`} className="w-full h-auto" />
+                                        </picture>
+                                    </div>
+                                    <div className="w-full">
+                                        <picture>
+                                            <source media="(prefers-color-scheme: dark)" srcSet={`https://github-readme-streak-stats-salesp07.vercel.app/?user=${user.githubStats.username}&count_private=true&border_radius=20&ring=00bfbf&stroke=c9d1d9&background=0d1117&fire=00bfbf&currStreakNum=00bfbf&sideNums=00bfbf&datesside=00bfbf&Labelscurr=00bfbf&currStreakLabel=00bfbf&sideLabels=00bfbf&dates=c9d1d9&border=c9d1d9&hide_border=true`} />
+                                            <source media="(prefers-color-scheme: light)" srcSet={`https://github-readme-streak-stats-salesp07.vercel.app/?user=${user.githubStats.username}&count_private=true&border_radius=20&ring=000000&stroke=000000&background=ffffff&fire=ff0000&currStreakNum=000000&sideNums=000000&datesside=000000&Labelscurr=000000&currStreakLabel=000000&sideLabels=000000&dates=000000&border=000000&hide_border=true`} />
+                                            <img alt="GitHub Streak Stats" src={`https://github-readme-streak-stats-salesp07.vercel.app/?user=${user.githubStats.username}&count_private=true&border_radius=20&ring=00bfbf&stroke=c9d1d9&background=0d1117&fire=00bfbf&currStreakNum=00bfbf&sideNums=00bfbf&sideNums=00bfbf&datesside=00bfbf&Labelscurr=00bfbf&currStreakLabel=00bfbf&sideLabels=00bfbf&dates=c9d1d9&border=c9d1d9&hide_border=true`} className="w-full h-auto" />
+                                        </picture>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Recent Activity */}
+                            {user.githubStats.recentActivity && user.githubStats.recentActivity.length > 0 && (
+                                <div className="mt-6 pt-6 border-t border-border">
+                                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Recent Contributions</h4>
+                                    <div className="space-y-3">
+                                        {user.githubStats.recentActivity.map((event: any) => (
+                                            <div key={event.id} className="flex items-start gap-3 text-sm">
+                                                <div className="mt-1 min-w-[24px]">
+                                                    {event.type === 'PushEvent' && <GitMerge size={16} className="text-green-500" />}
+                                                    {event.type === 'PullRequestEvent' && <GitMerge size={16} className="text-purple-500" />}
+                                                    {event.type === 'IssuesEvent' && <Target size={16} className="text-orange-500" />}
+                                                    {event.type === 'CreateEvent' && <Plus size={16} className="text-blue-500" />}
+                                                    {event.type === 'WatchEvent' && <Star size={16} className="text-yellow-500" />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-foreground">
+                                                        <span className="font-medium">
+                                                            {event.type.replace('Event', '').replace(/([A-Z])/g, ' $1').trim()}
+                                                        </span>
+                                                        {' '}on{' '}
+                                                        <a href={event.repo.url} target="_blank" className="text-primary hover:underline font-medium">
+                                                            {event.repo.name}
+                                                        </a>
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {new Date(event.created_at).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="bg-card border border-border rounded-xl p-8 text-center">
+                            <Github className="mx-auto text-muted-foreground mb-4 opacity-50" size={48} />
+                            <h3 className="text-lg font-bold mb-2">GitHub Not Connected</h3>
+                            <p className="text-muted-foreground">This user hasn't connected their GitHub account yet.</p>
+                        </div>
+                    )}
                 </div>
 
                 {user.roleTasks && user.roleTasks.length > 0 && (
@@ -506,26 +621,7 @@ function ProfileContent() {
                             <LoginHeatmap loginDates={user.loginDates} />
                         </div>
 
-                        {/* Activity Line Chart (Simple SVG Implementation) */}
-                        <div className="p-6 bg-card border border-border rounded-xl">
-                            <h3 className="text-lg font-semibold mb-4">Activity Trends</h3>
-                            <div className="h-40 flex items-end justify-between gap-2 px-2">
-                                {[...Array(14)].map((_, i) => {
-                                    const height = Math.floor(Math.random() * 80) + 20; // Mock data for now
-                                    return (
-                                        <div key={i} className="w-full bg-primary/20 hover:bg-primary/40 rounded-t-sm transition-all relative group" style={{ height: `${height}%` }}>
-                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 text-xs bg-popover text-popover-foreground px-2 py-1 rounded shadow-md transition-opacity">
-                                                {height} XP
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            <div className="flex justify-between mt-2 text-xs text-muted-foreground px-2">
-                                <span>14 days ago</span>
-                                <span>Today</span>
-                            </div>
-                        </div>
+
                     </div>
                 )}
 

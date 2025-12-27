@@ -6,10 +6,12 @@ import { UserPlus, UserCheck, Loader2 } from 'lucide-react';
 
 interface FollowButtonProps {
     targetUserId: string;
+    targetRole?: string;
+    targetEmail?: string;
     className?: string;
 }
 
-export default function FollowButton({ targetUserId, className = '' }: FollowButtonProps) {
+export default function FollowButton({ targetUserId, targetRole = 'member', targetEmail, className = '' }: FollowButtonProps) {
     const { user, followUser, unfollowUser } = useAuth();
     const [isFollowing, setIsFollowing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -32,15 +34,15 @@ export default function FollowButton({ targetUserId, className = '' }: FollowBut
         setIsLoading(true);
         try {
             if (isFollowing) {
-                await unfollowUser(targetUserId);
+                await unfollowUser(targetUserId, targetRole, targetEmail);
                 setIsFollowing(false);
             } else {
-                await followUser(targetUserId);
+                console.log('FollowButton: Following user', { targetUserId, targetRole, targetEmail });
+                await followUser(targetUserId, targetRole, targetEmail);
                 setIsFollowing(true);
             }
         } catch (error) {
             console.error("Failed to toggle follow:", error);
-            // Revert state on error if needed, but we're relying on AuthContext to handle state
         } finally {
             setIsLoading(false);
         }
@@ -53,8 +55,8 @@ export default function FollowButton({ targetUserId, className = '' }: FollowBut
             onClick={handleFollowToggle}
             disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${isFollowing
-                    ? 'bg-muted text-muted-foreground hover:bg-red-500/10 hover:text-red-500 border border-border'
-                    : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                ? 'bg-muted text-muted-foreground hover:bg-red-500/10 hover:text-red-500 border border-border'
+                : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
                 } ${className}`}
         >
             {isLoading ? (

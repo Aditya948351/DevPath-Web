@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Github, GitMerge, Globe, BookOpen, Code2, Users, ExternalLink, Star, Link as LinkIcon, Check, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -14,6 +14,11 @@ export default function OpenSourcePage() {
     const [connecting, setConnecting] = useState(false);
     const [accessToken, setAccessToken] = useState<string | null>(null);
 
+    useEffect(() => {
+        const storedToken = localStorage.getItem('github_access_token');
+        if (storedToken) setAccessToken(storedToken);
+    }, []);
+
     const handleConnectGitHub = async () => {
         if (!user) {
             alert("Please login to connect your GitHub account.");
@@ -23,43 +28,115 @@ export default function OpenSourcePage() {
         setConnecting(true);
         try {
             const provider = new GithubAuthProvider();
-            // Request access to read user data AND repos
             provider.addScope('read:user');
-            provider.addScope('repo'); // Full control of private repositories
+            provider.addScope('repo');
 
-            const result = await linkWithPopup(auth.currentUser!, provider);
-            const credential = GithubAuthProvider.credentialFromResult(result);
-            const token = credential?.accessToken;
-            if (token) setAccessToken(token);
+            let result;
+            let token;
+            let githubUser;
 
-            const githubUser = result.user;
+            try {
+                // Try linking first
+                result = await linkWithPopup(auth.currentUser!, provider);
+                const credential = GithubAuthProvider.credentialFromResult(result);
+                token = credential?.accessToken;
+                githubUser = result.user;
+            } catch (linkError: any) {
+                if (linkError.code === 'auth/credential-already-in-use') {
+                    // Fallback: Connect for Data Only automatically
+                    // We don't merge accounts, just use the token for fetching data.
 
-            // Extract GitHub data (some might be in providerData)
-            const githubProfile = githubUser.providerData.find(p => p.providerId === 'github.com');
+                    // Try to retrieve credential from the error
+                    const credential = GithubAuthProvider.credentialFromError(linkError);
+                    if (credential) {
+                        token = credential.accessToken;
+                        // We don't have the user object here, but we can fetch profile with the token
+                    } else {
+                        // If we can't get it from error, we fail gracefully.
+                        throw new Error("This GitHub account is linked to another user, and we couldn't retrieve the credentials to fetch its data. Please try a different account.");
+                    }
+                } else {
+                    throw linkError;
+                }
+            }
 
-            if (githubProfile) {
+            if (token) {
+                setAccessToken(token);
+                localStorage.setItem('github_access_token', token); // Persist token
+
+                // Fetch Extended Data
+                const { fetchUserProfile, fetchUserRepos, fetchUserActivity } = await import('@/lib/github');
+                const profile = await fetchUserProfile(token);
+                const repos = await fetchUserRepos(token);
+                const activity = await fetchUserActivity(profile.login, token);
+
+                // Calculate Total Stars
+                const totalStars = repos.reduce((acc: number, repo: any) => acc + (repo.stargazers_count || 0), 0);
+
+                // Calculate Top Languages
+                const languageCounts: Record<string, number> = {};
+                repos.forEach((repo: any) => {
+                    if (repo.language) {
+                        languageCounts[repo.language] = (languageCounts[repo.language] || 0) + 1;
+                    }
+                });
+                const topLanguages = Object.entries(languageCounts)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 5)
+                    .map(([language, count]) => ({ language, count }));
+
                 const githubData = {
                     githubStats: {
                         connected: true,
-                        username: githubProfile.displayName || githubProfile.email || 'GitHub User',
-                        photoURL: githubProfile.photoURL,
-                        lastFetched: new Date().toISOString()
+                        username: profile.login,
+                        photoURL: profile.avatar_url,
+                        repos: profile.public_repos,
+                        followers: profile.followers,
+                        following: profile.following,
+                        lastFetched: new Date().toISOString(),
+                        recentActivity: activity.slice(0, 5).map((event: any) => ({
+                            id: event.id,
+                            type: event.type,
+                            repo: { name: event.repo.name, url: `https://github.com/${event.repo.name}` },
+                            created_at: event.created_at
+                        })),
+                        totalStars,
+                        topLanguages,
+                        bio: profile.bio,
+                        company: profile.company,
+                        location: profile.location,
+                        createdAt: profile.created_at
                     },
-                    github: githubProfile.uid // Store GitHub UID or Username if available
+                    github: profile.login, // Store username
+                    // Store detailed data in subcollection or just basic stats here? 
+                    // Let's store basic stats in profile and maybe top repos if we want.
                 };
 
-                // Update Firestore
                 await updateUserProfile(githubData);
+
+                // Save Repos to Subcollection (optional, but good for "more details")
+                // We'll do this in the background to not block UI
+                const { collection, writeBatch, doc } = await import('firebase/firestore');
+                const batch = writeBatch(db);
+
+                const collectionName = user.role === 'admin' ? 'admins' : 'members';
+                const docId = user.role === 'admin' ? user.email! : user.uid;
+
+                const reposRef = collection(db, collectionName, docId, 'github_repos');
+
+                // Save top 10 repos for now to save writes
+                repos.slice(0, 10).forEach((repo: any) => {
+                    const repoDoc = doc(reposRef, repo.id.toString());
+                    batch.set(repoDoc, repo);
+                });
+                await batch.commit();
+
                 alert("GitHub account connected successfully!");
             }
 
         } catch (error: any) {
             console.error("Error connecting GitHub:", error);
-            if (error.code === 'auth/credential-already-in-use') {
-                alert("This GitHub account is already connected to another user.");
-            } else {
-                alert("Failed to connect GitHub. " + error.message);
-            }
+            alert("Failed to connect GitHub: " + error.message);
         } finally {
             setConnecting(false);
         }

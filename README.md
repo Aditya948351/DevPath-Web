@@ -92,3 +92,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 Built with ❤️ by the DevPath Community.
+
+## 🌟 Major Contributors
+
+- **Aditya948351** - Core Maintainer & Lead Developer

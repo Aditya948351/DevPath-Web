@@ -12,7 +12,43 @@ service cloud.firestore {
     // Admins collection
     match /admins/{adminId} {
       allow read: if true; // Public read
-      allow write: if isSuperAdmin() || (request.auth != null && request.auth.token.email == adminId);
+      allow write: if isSuperAdmin() || (request.auth != null && (request.auth.token.email == adminId || request.auth.uid == adminId));
+
+      // GitHub Repos Subcollection
+      match /github_repos/{repoId} {
+        allow read: if true;
+        allow write: if isSuperAdmin() || (request.auth != null && request.auth.token.email == adminId);
+      }
+
+      // Projects Subcollection
+      match /projects/{projectId} {
+        allow read: if true;
+        allow create: if request.auth != null;
+        allow update: if request.auth != null && (
+          request.auth.token.email == adminId || 
+          isSuperAdmin() || 
+          (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stars', 'likes', 'starCount']))
+        );
+        allow delete: if request.auth != null && (request.auth.token.email == adminId || isSuperAdmin());
+      }
+
+      // Allow updating followers list (for Follow feature)
+      // Allow updating followers list (for Follow feature)
+      // Explicitly allowing write access to followers for authenticated users
+      allow update: if request.auth != null && (
+        request.auth.token.email == adminId || 
+        request.auth.uid == adminId ||
+        isSuperAdmin() ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers', 'points'])) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followers'])) ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['following']))
+      );
+
+      // Badges Subcollection
+      match /badges/{badgeId} {
+        allow read: if true;
+        allow write: if isSuperAdmin() || (request.auth != null && request.auth.token.email == adminId);
+      }
     }
 
     // Super Admins collection (for dynamic super admin management)
@@ -53,6 +89,12 @@ service cloud.firestore {
       match /badges/{badgeId} {
         allow read: if true;
         allow write: if isSuperAdmin() || (request.auth != null && request.auth.uid == userId);
+      }
+
+      // GitHub Repos Subcollection
+      match /github_repos/{repoId} {
+        allow read: if true;
+        allow write: if request.auth != null && (request.auth.uid == userId || isSuperAdmin());
       }
     }
 

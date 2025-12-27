@@ -43,8 +43,21 @@ interface User {
         repos?: number;
         stars?: number;
         followers?: number;
+        following?: number;
         contributions?: number;
         lastFetched?: any;
+        recentActivity?: {
+            id: string;
+            type: string;
+            repo: { name: string; url: string };
+            created_at: string;
+        }[];
+        totalStars?: number;
+        topLanguages?: { language: string; count: number }[];
+        bio?: string;
+        company?: string;
+        location?: string;
+        createdAt?: string;
     };
     followers?: string[]; // Array of user UIDs
     following?: string[]; // Array of user UIDs
@@ -53,6 +66,7 @@ interface User {
     skills?: string[];
     badges?: string[];
     sessionId?: string;
+    docId?: string; // Actual Firestore Document ID (Email or UID)
 }
 
 interface AuthContextType {
@@ -60,8 +74,8 @@ interface AuthContextType {
     login: (email: string, pass: string) => Promise<void>;
     logout: () => Promise<void>;
     updateUserProfile: (data: Partial<User>) => Promise<void>;
-    followUser: (targetUserId: string) => Promise<void>;
-    unfollowUser: (targetUserId: string) => Promise<void>;
+    followUser: (targetUserId: string, targetRole?: string, targetEmail?: string) => Promise<void>;
+    unfollowUser: (targetUserId: string, targetRole?: string, targetEmail?: string) => Promise<void>;
     followCommunity: () => Promise<void>;
     isLoading: boolean;
     isAdminVerified: boolean;
@@ -135,11 +149,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                     // Check if user is admin (only if email exists)
                     if (firebaseUser.email) {
+                        // 1. Try by Email
                         const adminDocRef = doc(db, 'admins', firebaseUser.email.toLowerCase());
                         const adminDoc = await getDoc(adminDocRef);
                         if (adminDoc.exists()) {
                             role = 'admin';
-                            userData = { ...userData, ...adminDoc.data() };
+                            userData = { ...userData, ...adminDoc.data(), docId: adminDoc.id };
+                        } else {
+                            // 2. Try by UID (Fallback)
+                            const adminUidDocRef = doc(db, 'admins', firebaseUser.uid);
+                            const adminUidDoc = await getDoc(adminUidDocRef);
+                            if (adminUidDoc.exists()) {
+                                role = 'admin';
+                                userData = { ...userData, ...adminUidDoc.data(), docId: adminUidDoc.id };
+                            }
                         }
                     }
 
@@ -348,7 +371,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const adminSnap = await getDoc(adminRef);
 
             if (adminSnap.exists()) {
-                await setDoc(adminRef, { sessionId }, { merge: true });
+                // Sync UID to Admin doc to ensure client.tsx can find it by UID query
+                await setDoc(adminRef, {
+                    sessionId,
+                    uid: userCredential.user.uid
+                }, { merge: true });
             } else {
                 // Check Member
                 const memberRef = doc(db, 'members', userCredential.user.uid);
@@ -410,10 +437,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const followUser = async (targetUserId: string) => {
+    const followUser = async (targetUserId: string, targetRole: string = 'member', targetEmail?: string) => {
         if (!user) return;
-        if (user.email === 'devpathind.community@gmail.com') return; // Super Admin Guard
-        if (user.uid === targetUserId) return; // Prevent self-follow
+        if (user.uid === targetUserId) return; // Cannot follow self
         if (user.following?.includes(targetUserId)) return; // Prevent double follow
 
         try {
@@ -424,25 +450,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Update current user's following list
             const collectionName = user.role === 'admin' ? 'admins' : 'members';
-            const docId = user.role === 'admin' ? user.email!.toLowerCase() : user.uid;
+            // Use the stored docId if available, otherwise fallback to email/uid logic
+            const docId = user.docId || (user.role === 'admin' ? user.email!.toLowerCase() : user.uid);
+
             const currentUserRef = doc(db, collectionName, docId);
             batch.update(currentUserRef, {
                 following: arrayUnion(targetUserId)
             });
 
             // Update target user's followers list & Award Points
-            const targetUserRef = doc(db, 'members', targetUserId);
-            // Store UID in followers list for consistency
-            batch.update(targetUserRef, {
-                followers: arrayUnion(user.uid),
-                points: increment(POINTS.FOLLOWER_GAINED) // Award 10 points
-            });
+            const targetCollection = targetRole === 'admin' ? 'admins' : 'members';
+            // Use targetUserId directly as it is resolved correctly by client.tsx (Document ID)
+            const targetDocId = targetUserId;
 
-            // Sync target user points to leaderboard
-            const targetLeaderboardRef = doc(db, 'leaderboard', targetUserId);
-            batch.set(targetLeaderboardRef, {
-                points: increment(POINTS.FOLLOWER_GAINED)
-            }, { merge: true });
+            console.log(`[followUser] Target: ${targetCollection}/${targetDocId}`);
+            console.log(`[followUser] Target Role: ${targetRole}, Email: ${targetEmail}, UID: ${targetUserId}`);
+
+            const targetUserRef = doc(db, targetCollection, targetDocId);
+
+            const updateData: any = {
+                followers: arrayUnion(user.uid)
+            };
+
+            // Only award points if target is NOT an admin
+            if (targetRole !== 'admin') {
+                updateData.points = increment(POINTS.FOLLOWER_GAINED);
+            }
+
+            // Revert to update to ensure we hit the 'allow update' rule in Firestore
+            batch.update(targetUserRef, updateData);
+
+            // Sync target user points to leaderboard (Only if target is member or has leaderboard entry)
+            // We'll try to update leaderboard using UID. If it fails (e.g. admin not in leaderboard), we catch it.
+            if (targetRole === 'member') {
+                const targetLeaderboardRef = doc(db, 'leaderboard', targetUserId);
+                batch.set(targetLeaderboardRef, {
+                    points: increment(POINTS.FOLLOWER_GAINED)
+                }, { merge: true });
+            }
 
             await batch.commit();
 
@@ -454,7 +499,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const unfollowUser = async (targetUserId: string) => {
+    const unfollowUser = async (targetUserId: string, targetRole: string = 'member', targetEmail?: string) => {
         if (!user) return;
         if (user.email === 'devpathind.community@gmail.com') return; // Super Admin Guard
         try {
@@ -465,17 +510,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             // Update current user's following list
             const collectionName = user.role === 'admin' ? 'admins' : 'members';
-            const docId = user.role === 'admin' ? user.email!.toLowerCase() : user.uid;
+            // Use the stored docId if available, otherwise fallback to email/uid logic
+            const docId = user.docId || (user.role === 'admin' ? user.email!.toLowerCase() : user.uid);
+
             const currentUserRef = doc(db, collectionName, docId);
             batch.update(currentUserRef, {
                 following: arrayRemove(targetUserId)
             });
 
             // Update target user's followers list
-            const targetUserRef = doc(db, 'members', targetUserId);
+            const targetCollection = targetRole === 'admin' ? 'admins' : 'members';
+            // Use targetUserId directly
+            const targetDocId = targetUserId;
+
+            const targetUserRef = doc(db, targetCollection, targetDocId);
+            // Revert to update
             batch.update(targetUserRef, {
-                followers: arrayRemove(user.uid) // Remove UID
-                // We do not deduct points on unfollow to prevent negative balances
+                followers: arrayRemove(user.uid)
             });
 
             await batch.commit();

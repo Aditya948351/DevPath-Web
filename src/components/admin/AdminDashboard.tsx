@@ -65,6 +65,7 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
     // Filter & Sort State
     const [filterRole, setFilterRole] = useState('all');
     const [filterCommunityRole, setFilterCommunityRole] = useState('all');
+    const [filterGithub, setFilterGithub] = useState('all');
     const [sortBy, setSortBy] = useState('name');
 
     // Notifications State
@@ -120,25 +121,57 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
             // Fetch Admins
             const adminsRef = collection(db, 'admins');
             const adminsSnap = await getDocs(adminsRef);
-            const adminsList: any[] = adminsSnap.docs.map(doc => ({
-                uid: doc.id,
-                ...doc.data(),
-                role: 'admin' // Ensure role is set
-            }));
+            const adminsList: any[] = adminsSnap.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    uid: doc.id,
+                    ...data,
+                    email: data.email || (doc.id.includes('@') ? doc.id : undefined), // Ensure email is set
+                    role: 'admin' // Ensure role is set
+                };
+            });
 
-            // Merge Lists (Prioritize Admins if duplicates exist by email)
-            const allUsers = [...membersList];
-            adminsList.forEach(admin => {
-                // Check if admin already exists in members list (by UID or Email)
-                const existingIndex = allUsers.findIndex(u => u.email === admin.email || u.uid === admin.uid);
-                if (existingIndex !== -1) {
-                    // Update existing entry with admin data
-                    allUsers[existingIndex] = { ...allUsers[existingIndex], ...admin };
-                } else {
-                    // Add new admin entry
-                    allUsers.push(admin);
+            // Merge Lists (Prioritize Admins if duplicates exist by email or UID)
+            // Use a Map to ensure uniqueness by UID
+            const userMap = new Map();
+
+            // 1. Add all members first
+            membersList.forEach(member => {
+                if (member.uid) {
+                    userMap.set(member.uid, member);
                 }
             });
+
+            // 2. Merge Admins (Overwrite member data if exists)
+            adminsList.forEach(admin => {
+                // Admin ID might be Email (doc.id) or UID (data.uid)
+                // We prefer UID if available, otherwise check if we can find a member with this email
+                let targetUid = admin.uid;
+
+                // If admin.uid is missing or is just the email, try to find matching member by email
+                if (!targetUid || targetUid.includes('@')) {
+                    const matchingMember = membersList.find(m => m.email === admin.email);
+                    if (matchingMember) {
+                        targetUid = matchingMember.uid;
+                    } else {
+                        // If no matching member, use the admin's ID (which might be email) as UID
+                        targetUid = admin.uid || admin.email || doc.id;
+                    }
+                }
+
+                if (targetUid) {
+                    const existing = userMap.get(targetUid);
+                    if (existing) {
+                        // Merge: Admin data takes precedence, but keep existing UID
+                        userMap.set(targetUid, { ...existing, ...admin, uid: targetUid, role: 'admin' });
+                    } else {
+                        // New Admin (not in members list)
+                        userMap.set(targetUid, { ...admin, uid: targetUid, role: 'admin' });
+                    }
+                }
+            });
+
+            const allUsers = Array.from(userMap.values());
 
             console.log(`Found ${allUsers.length} total users.`);
             setUsers(allUsers);
@@ -940,7 +973,11 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
         const matchesCommunityRole = filterCommunityRole === 'all' ? true :
             u.communityRole === filterCommunityRole;
 
-        return matchesSearch && matchesRole && matchesCommunityRole;
+        const matchesGithub = filterGithub === 'all' ? true :
+            filterGithub === 'connected' ? u.githubStats?.connected :
+                !u.githubStats?.connected;
+
+        return matchesSearch && matchesRole && matchesCommunityRole && matchesGithub;
     }).sort((a, b) => {
         if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
         if (sortBy === 'points') return (b.points || 0) - (a.points || 0);
@@ -1078,6 +1115,16 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
                                 </select>
 
                                 <select
+                                    value={filterGithub}
+                                    onChange={(e) => setFilterGithub(e.target.value)}
+                                    className="bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                >
+                                    <option value="all">All GitHub Status</option>
+                                    <option value="connected">GitHub Connected</option>
+                                    <option value="not_connected">Not Connected</option>
+                                </select>
+
+                                <select
                                     value={sortBy}
                                     onChange={(e) => setSortBy(e.target.value)}
                                     className="bg-card border border-border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
@@ -1105,6 +1152,7 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
                                             <th className="p-4 font-medium">Role</th>
                                             <th className="p-4 font-medium">Community Role</th>
                                             <th className="p-4 font-medium">State</th>
+                                            <th className="p-4 font-medium">GitHub</th>
                                             <th className="p-4 font-medium">Contact</th>
                                             <th className="p-4 font-medium">Points</th>
                                             <th className="p-4 font-medium text-right">Actions</th>
@@ -1142,8 +1190,22 @@ export default function AdminDashboard({ initialAuth = false }: AdminDashboardPr
                                                 <td className="p-4 text-sm">
                                                     {u.state || 'N/A'}
                                                 </td>
+                                                <td className="p-4 text-sm">
+                                                    {u.githubStats?.connected ? (
+                                                        <div className="flex flex-col">
+                                                            <span className="text-green-500 flex items-center gap-1 text-xs font-medium">
+                                                                Connected
+                                                            </span>
+                                                            <span className="text-xs text-muted-foreground">
+                                                                {u.githubStats.followers || 0} Followers
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-muted-foreground text-xs">Not Linked</span>
+                                                    )}
+                                                </td>
                                                 <td className="p-4 text-xs text-muted-foreground">
-                                                    <div>{u.phoneNumber || 'No Phone'}</div>
+                                                    <div>{u.mobile || u.phoneNumber || 'No Phone'}</div>
                                                     <div className="opacity-75">{u.email}</div>
                                                 </td>
                                                 <td className="p-4 font-mono">{u.points || 0}</td>
