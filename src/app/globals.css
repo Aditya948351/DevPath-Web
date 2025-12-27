@@ -260,3 +260,88 @@ a {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+
+/* Legacy HTML Attribute Support for Markdown */
+.markdown-body [align="center"] {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.markdown-body [align="left"] {
+  text-align: left;
+}
+
+.markdown-body [align="right"] {
+  text-align: right;
+}
+
+.markdown-body [valign="top"] {
+  vertical-align: top;
+}
+
+.markdown-body [valign="middle"] {
+  vertical-align: middle;
+}
+
+.markdown-body [valign="bottom"] {
+  vertical-align: bottom;
+}
+
+.markdown-body table[align="center"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.markdown-body img[align="center"] {
+  display: block;
+  margin: 0 auto;
+}
+
+.markdown-body img[align="left"] {
+  float: left;
+  margin-right: 1em;
+}
+
+.markdown-body img[align="right"] {
+  float: right;
+  margin-left: 1em;
+}
+
+/* Force width/height attributes to work */
+.markdown-body img[width] {
+  width: auto;
+  /* Allow attribute to control it if not overridden by max-width */
+}
+
+.markdown-body img[height] {
+  height: auto;
+}
+
+/* Specific fix for the user's table layout */
+.markdown-body table {
+  width: 100%;
+  /* Default to full width if not specified, but allow attribute override */
+  border-collapse: collapse;
+}
+
+.markdown-body td,
+.markdown-body th {
+  border: 1px solid var(--border);
+  padding: 8px;
+}
+
+/* Ensure images in tables don't break layout */
+.markdown-body table img {
+  max-width: 100%;
+  display: inline-block;
+}
+
+/* Restore width attribute support for table cells */
+.markdown-body td[width] {
+  width: attr(width px, auto);
+}
+
+.markdown-body [width] {
+  width: auto;
+}

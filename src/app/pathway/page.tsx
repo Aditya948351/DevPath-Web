@@ -301,7 +301,7 @@ export default function PathwayPage() {
                 </div>
 
                 {/* Community Rewards Section */}
-                <div className="space-y-6">
+                <div className="space-y-8">
                     <div className="text-center space-y-2">
                         <h2 className="text-3xl font-bold flex items-center justify-center gap-2">
                             <Gift className="text-primary" /> Community Rewards
@@ -309,32 +309,114 @@ export default function PathwayPage() {
                         <p className="text-muted-foreground">Redeem your hard-earned Dev Points for exclusive perks and swag.</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[
-                            { name: "Placement Resources", cost: 5000, icon: "💼", desc: "Premium resume review & interview prep materials." },
-                            { name: "Profile Spotlight", cost: 7500, icon: "🚀", desc: "Get featured on the community homepage for 24h." },
-                            { name: "Project Giveaway Entry", cost: 10000, icon: "🎁", desc: "Ticket for monthly premium project giveaways." },
-                            { name: "Premium API Key", cost: 15000, icon: "🔑", desc: "Access to one premium dev tool (e.g., Vercel, Supabase)." },
-                            { name: "1:1 Mentorship", cost: 25000, icon: "🎓", desc: "30-min session with a senior developer." },
-                            { name: "DevPath Sticker Pack", cost: 35000, icon: "🎨", desc: "High-quality die-cut stickers (Subject to availability)." },
-                            { name: "DevPath Coffee Cup", cost: 40000, icon: "☕", desc: "Ceramic mug with DevPath logo (Sponsorship dependent)." },
-                            { name: "DevPath Mouse Pad", cost: 45000, icon: "🖱️", desc: "Premium gaming mouse pad with community art." },
-                            { name: "DevPath T-Shirt", cost: 50000, icon: "👕", desc: "Exclusive community branded tee (Sponsorship dependent)." },
-                        ].map((reward) => (
-                            <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
-                                <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
-                                <div>
-                                    <h3 className="font-bold text-lg">{reward.name}</h3>
-                                    <p className="text-sm text-muted-foreground">{reward.desc}</p>
+                    {/* PHASE 1 */}
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-bold text-primary border-b border-border pb-2">PHASE 1 — RESOURCES & GUIDED LEARNING (FOUNDATION)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                { name: "DevPath Curated Fundamentals Notes", cost: 5000, icon: "📚", desc: "Clean, original notes for DSA, Web, Android, Backend, ML. Focus: concepts + mental models." },
+                                { name: "DevPath Practice Set (Domain-based)", cost: 8000, icon: "📝", desc: "Carefully selected problems, tasks, and mini-assignments mapped to one chosen domain." },
+                                { name: "DevPath Roadmap + Weekly Plan", cost: 12000, icon: "🗺️", desc: "A realistic roadmap: What to learn, what to build, in what order. Time-bound and outcome-focused." },
+                                { name: "Single Guided Project (Chosen Tech Stack)", cost: 20000, icon: "🏗️", desc: "User selects stack. Receives one clear project problem, scope, and expected output." },
+                            ].map((reward) => (
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">{reward.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{reward.desc}</p>
+                                    </div>
+                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
+                                        <span className="font-mono font-bold text-primary">{reward.cost.toLocaleString()} pts</span>
+                                        <button className="px-3 py-1 text-xs bg-muted hover:bg-primary hover:text-primary-foreground rounded-full transition-colors">
+                                            Redeem
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
-                                    <span className="font-mono font-bold text-primary">{reward.cost.toLocaleString()} pts</span>
-                                    <button className="px-3 py-1 text-xs bg-muted hover:bg-primary hover:text-primary-foreground rounded-full transition-colors">
-                                        Redeem
-                                    </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* PHASE 2 */}
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-bold text-blue-500 border-b border-border pb-2">PHASE 2 — PROJECTS, MENTORSHIP & CREDIBILITY</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                { name: "Verified Learner Badge", cost: 30000, icon: "🎓", desc: "Awarded after roadmap + task completion. Signals discipline." },
+                                { name: "Placement & Interview Prep Resources", cost: 40000, icon: "💼", desc: "Domain-focused: Core concepts, interview traps, what actually matters." },
+                                { name: "Project Mentorship – DevPath", cost: 50000, icon: "👨‍🏫", desc: "Mentorship on one project: Direction, architecture decisions, review checkpoints." },
+                                { name: "Community Spotlight", cost: 65000, icon: "🚀", desc: "Featured for Project, Learnings, and Execution clarity." },
+                                { name: "Verified Builder Badge", cost: 100000, icon: "🛠️", desc: "Earned only after completed project and review approval." },
+                            ].map((reward) => (
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-blue-500/50 transition-colors group">
+                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">{reward.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{reward.desc}</p>
+                                    </div>
+                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
+                                        <span className="font-mono font-bold text-primary">{reward.cost.toLocaleString()} pts</span>
+                                        <button className="px-3 py-1 text-xs bg-muted hover:bg-primary hover:text-primary-foreground rounded-full transition-colors">
+                                            Redeem
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* PHASE 3 */}
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-bold text-purple-500 border-b border-border pb-2">PHASE 3 — PHYSICAL COMMUNITY REWARDS</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                { name: "DevPath Sticker Pack", cost: 125000, icon: "🎨", desc: "Simple, symbolic, low cost." },
+                                { name: "DevPath Coffee Cup", cost: 150000, icon: "☕", desc: "Clean branding. Everyday utility." },
+                                { name: "DevPath Mouse Pad", cost: 200000, icon: "🖱️", desc: "Desk-level presence. Long-term use." },
+                                { name: "DevPath T-Shirt", cost: 300000, icon: "👕", desc: "Not merch. Identity. Limited batches only." },
+                                { name: "Laptop Cooling Pad", cost: 400000, icon: "❄️", desc: "Practical reward for people who actually build." },
+                                { name: "Free DevPath Event Ticket", cost: 500000, icon: "🎟️", desc: "Access to Workshop, Meetup, or DevPath-hosted event." },
+                            ].map((reward) => (
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-purple-500/50 transition-colors group">
+                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">{reward.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{reward.desc}</p>
+                                    </div>
+                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
+                                        <span className="font-mono font-bold text-primary">{reward.cost.toLocaleString()} pts</span>
+                                        <button className="px-3 py-1 text-xs bg-muted hover:bg-primary hover:text-primary-foreground rounded-full transition-colors">
+                                            Redeem
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* PHASE 4 */}
+                    <div className="space-y-4">
+                        <h3 className="text-xl font-bold text-yellow-500 border-b border-border pb-2">PHASE 4 — PREMIUM PHYSICAL REWARDS (TOP TIER)</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {[
+                                { name: "DevPath Backpack (Premium)", cost: 650000, icon: "🎒", desc: "High-quality backpack. Very limited quantity." },
+                                { name: "Mechanical Keyboard / Headset", cost: 800000, icon: "⌨️", desc: "One premium productivity accessory. Utility-focused." },
+                                { name: "DevPath Flagship Hardware", cost: 1000000, icon: "🖥️", desc: "External Monitor, Tablet, or Premium accessory. Rare & Symbolic." },
+                            ].map((reward) => (
+                                <div key={reward.name} className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 hover:border-yellow-500/50 transition-colors group">
+                                    <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">{reward.icon}</div>
+                                    <div>
+                                        <h3 className="font-bold text-lg">{reward.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{reward.desc}</p>
+                                    </div>
+                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-border">
+                                        <span className="font-mono font-bold text-primary">{reward.cost.toLocaleString()} pts</span>
+                                        <button className="px-3 py-1 text-xs bg-muted hover:bg-primary hover:text-primary-foreground rounded-full transition-colors">
+                                            Redeem
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

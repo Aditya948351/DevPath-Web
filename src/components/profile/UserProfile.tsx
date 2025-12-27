@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { teamMembers } from '@/data/team';
-import { Trophy, Flame, Star, Target, MapPin, Link as LinkIcon, Calendar, Phone, LogOut, Camera, Save, X, Github, Instagram, Linkedin, CheckCircle, Share2, Shield, Copy, Check, Plus, Edit3, Users, Globe } from 'lucide-react';
+import { Trophy, Flame, Star, Target, MapPin, Link as LinkIcon, Calendar, Phone, LogOut, Camera, Save, X, Github, Instagram, Linkedin, CheckCircle, Share2, Shield, Copy, Check, Plus, Edit3, Users, Globe, BookOpen, GitMerge } from 'lucide-react';
 import styles from './Profile.module.css';
+import 'github-markdown-css/github-markdown.css';
 import ProjectUploadModal from '@/components/projects/ProjectUploadModal';
 import ProjectCard from '@/components/projects/ProjectCard';
 import Achievements from '@/components/profile/Achievements';
@@ -200,9 +201,27 @@ export default function UserProfile() {
             // Fetch users one by one (optimization: use 'in' query for batches of 10 if needed)
             const { getDoc } = await import('firebase/firestore');
             const users = await Promise.all(uids.map(async (uid) => {
-                const docRef = doc(db, 'members', uid);
-                const snap = await getDoc(docRef);
-                return snap.exists() ? { uid: snap.id, ...snap.data() } : null;
+                // Try members first
+                let docRef = doc(db, 'members', uid);
+                let snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    return { uid: snap.id, ...snap.data() };
+                }
+
+                // Try admins if not found
+                // Admins are keyed by email usually, but let's check if we can find by UID query or if UID is the key (unlikely for admins)
+                // Actually, for admins, the doc ID is email. But the 'followers' array stores UIDs.
+                // So we need to query admins where uid == uid.
+                const { query, collection, where, getDocs } = await import('firebase/firestore');
+                const q = query(collection(db, 'admins'), where('uid', '==', uid));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    return { uid: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+                }
+
+                return null;
             }));
             setModalUsers(users.filter(u => u !== null));
         } catch (error) {
@@ -394,27 +413,141 @@ export default function UserProfile() {
                     <div className="space-y-6">
                         <LoginHeatmap loginDates={user.loginDates} />
 
-                        {/* Activity Line Chart (Simple SVG Implementation) */}
-                        <div className="p-6 bg-card border border-border rounded-xl">
-                            <h3 className="text-lg font-semibold mb-4">Activity Trends</h3>
-                            <div className="h-40 flex items-end justify-between gap-2 px-2">
-                                {[...Array(14)].map((_, i) => {
-                                    const height = Math.floor(Math.random() * 80) + 20; // Mock data for now
-                                    return (
-                                        <div key={i} className="w-full bg-primary/20 hover:bg-primary/40 rounded-t-sm transition-all relative group" style={{ height: `${height}%` }}>
-                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 opacity-0 group-hover:opacity-100 text-xs bg-popover text-popover-foreground px-2 py-1 rounded shadow-md transition-opacity">
-                                                {height} XP
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            <div className="flex justify-between mt-2 text-xs text-muted-foreground px-2">
-                                <span>14 days ago</span>
-                                <span>Today</span>
-                            </div>
-                        </div>
+
                     </div>
+
+                    {/* GitHub Stats Section */}
+                    {user.githubStats?.connected && (
+                        <div className="bg-card border border-border rounded-xl p-6">
+                            <h3 className="text-xl font-bold flex items-center gap-2 mb-4">
+                                <Github className="text-primary" size={20} /> GitHub Activity
+                            </h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <BookOpen className="mb-2 text-primary h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.repos || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Repositories</span>
+                                </div>
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <Star className="mb-2 text-yellow-500 h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.totalStars || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Stars</span>
+                                </div>
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <Users className="mb-2 text-blue-500 h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.followers || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Followers</span>
+                                </div>
+                                <div className="flex flex-col items-center p-4 bg-muted/30 rounded-xl border border-border/50 hover:border-primary/50 transition-colors">
+                                    <GitMerge className="mb-2 text-purple-500 h-6 w-6" />
+                                    <span className="text-2xl font-bold">{user.githubStats.following || 0}</span>
+                                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Following</span>
+                                </div>
+                            </div>
+
+                            {/* GitHub Readme Stats & Streak */}
+                            {user.githubStats.username && (
+                                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="w-full">
+                                        <picture>
+                                            <source media="(prefers-color-scheme: dark)" srcSet={`https://github-readme-stats-salesp07.vercel.app/api?username=${user.githubStats.username}&count_private=true&show_icons=true&title_color=00bfbf&icon_color=00bfbf&text_color=c9d1d9&bg_color=0d1117&rank_icon=github&border_radius=20&hide_border=true`} />
+                                            <source media="(prefers-color-scheme: light)" srcSet={`https://github-readme-stats-salesp07.vercel.app/api?username=${user.githubStats.username}&count_private=true&show_icons=true&title_color=000000&icon_color=000000&text_color=000000&bg_color=ffffff&rank_icon=github&border_radius=20&hide_border=true`} />
+                                            <img alt="GitHub Stats" src={`https://github-readme-stats-salesp07.vercel.app/api?username=${user.githubStats.username}&count_private=true&show_icons=true&title_color=00bfbf&icon_color=00bfbf&text_color=c9d1d9&bg_color=0d1117&rank_icon=github&border_radius=20&hide_border=true`} className="w-full h-auto" />
+                                        </picture>
+                                    </div>
+                                    <div className="w-full">
+                                        <picture>
+                                            <source media="(prefers-color-scheme: dark)" srcSet={`https://github-readme-streak-stats-salesp07.vercel.app/?user=${user.githubStats.username}&count_private=true&border_radius=20&ring=00bfbf&stroke=c9d1d9&background=0d1117&fire=00bfbf&currStreakNum=00bfbf&sideNums=00bfbf&datesside=00bfbf&Labelscurr=00bfbf&currStreakLabel=00bfbf&sideLabels=00bfbf&dates=c9d1d9&border=c9d1d9&hide_border=true`} />
+                                            <source media="(prefers-color-scheme: light)" srcSet={`https://github-readme-streak-stats-salesp07.vercel.app/?user=${user.githubStats.username}&count_private=true&border_radius=20&ring=000000&stroke=000000&background=ffffff&fire=ff0000&currStreakNum=000000&sideNums=000000&datesside=000000&Labelscurr=000000&currStreakLabel=000000&sideLabels=000000&dates=000000&border=000000&hide_border=true`} />
+                                            <img alt="GitHub Streak Stats" src={`https://github-readme-streak-stats-salesp07.vercel.app/?user=${user.githubStats.username}&count_private=true&border_radius=20&ring=00bfbf&stroke=c9d1d9&background=0d1117&fire=00bfbf&currStreakNum=00bfbf&sideNums=00bfbf&sideNums=00bfbf&datesside=00bfbf&Labelscurr=00bfbf&currStreakLabel=00bfbf&sideLabels=00bfbf&dates=c9d1d9&border=c9d1d9&hide_border=true`} className="w-full h-auto" />
+                                        </picture>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Profile Details & Languages */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                                {/* Details */}
+                                <div className="space-y-3 text-sm">
+                                    {user.githubStats.bio && (
+                                        <p className="text-muted-foreground italic">"{user.githubStats.bio}"</p>
+                                    )}
+                                    <div className="flex flex-wrap gap-4">
+                                        {user.githubStats.company && (
+                                            <div className="flex items-center gap-2 text-muted-foreground">
+                                                <Users size={14} /> {user.githubStats.company}
+                                            </div>
+                                        )}
+                                        {user.githubStats.location && (
+                                            <div className="flex items-center gap-2 text-muted-foreground">
+                                                <MapPin size={14} /> {user.githubStats.location}
+                                            </div>
+                                        )}
+                                        {user.githubStats.createdAt && (
+                                            <div className="flex items-center gap-2 text-muted-foreground">
+                                                <Calendar size={14} /> Joined {new Date(user.githubStats.createdAt).getFullYear()}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Top Languages */}
+                                {user.githubStats.topLanguages && user.githubStats.topLanguages.length > 0 && (
+                                    <div>
+                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Top Languages</h4>
+                                        <div className="flex flex-wrap gap-2">
+                                            {user.githubStats.topLanguages.map((lang) => (
+                                                <div key={lang.language} className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full text-xs font-medium">
+                                                    <span className={`w-2 h-2 rounded-full ${lang.language === 'TypeScript' ? 'bg-blue-500' :
+                                                        lang.language === 'JavaScript' ? 'bg-yellow-400' :
+                                                            lang.language === 'Python' ? 'bg-green-500' :
+                                                                lang.language === 'HTML' ? 'bg-orange-500' :
+                                                                    lang.language === 'CSS' ? 'bg-blue-400' :
+                                                                        'bg-gray-400'
+                                                        }`}></span>
+                                                    {lang.language}
+                                                    <span className="text-muted-foreground ml-1">({lang.count})</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {user.githubStats.recentActivity && user.githubStats.recentActivity.length > 0 && (
+                                <div className="mt-6 pt-6 border-t border-border">
+                                    <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Recent Contributions</h4>
+                                    <div className="space-y-3">
+                                        {user.githubStats.recentActivity.map((event) => (
+                                            <div key={event.id} className="flex items-start gap-3 text-sm">
+                                                <div className="mt-1 min-w-[24px]">
+                                                    {event.type === 'PushEvent' && <GitMerge size={16} className="text-blue-500" />}
+                                                    {event.type === 'CreateEvent' && <Plus size={16} className="text-green-500" />}
+                                                    {event.type === 'WatchEvent' && <Star size={16} className="text-yellow-500" />}
+                                                    {event.type === 'PullRequestEvent' && <GitMerge size={16} className="text-purple-500" />}
+                                                    {!['PushEvent', 'CreateEvent', 'WatchEvent', 'PullRequestEvent'].includes(event.type) && <Github size={16} className="text-muted-foreground" />}
+                                                </div>
+                                                <div>
+                                                    <p className="text-foreground">
+                                                        <span className="font-medium">
+                                                            {event.type.replace('Event', '').replace(/([A-Z])/g, ' $1').trim()}
+                                                        </span>
+                                                        {' '}on{' '}
+                                                        <a href={event.repo.url} target="_blank" className="text-primary hover:underline font-medium">
+                                                            {event.repo.name}
+                                                        </a>
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {new Date(event.created_at).toLocaleDateString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* About Me & Tech Stack */}
                     <div className="bg-card border border-border rounded-xl p-6">
@@ -487,8 +620,10 @@ export default function UserProfile() {
                                         id="aboutContent"
                                     />
                                 ) : (
-                                    <div className="min-h-[300px] p-4 bg-background border border-border rounded-lg prose prose-invert max-w-none">
-                                        <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>{aboutContent}</ReactMarkdown>
+                                    <div className="min-h-[300px] p-4 bg-background border border-border rounded-lg">
+                                        <div className="markdown-body">
+                                            <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>{aboutContent}</ReactMarkdown>
+                                        </div>
                                     </div>
                                 )}
                                 <div className="flex justify-end gap-2">
@@ -497,7 +632,7 @@ export default function UserProfile() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="prose prose-invert max-w-none">
+                            <div className="markdown-body">
                                 <ReactMarkdown rehypePlugins={[rehypeRaw]} remarkPlugins={[remarkGfm]}>
                                     {user.aboutMarkdown || "No description provided yet."}
                                 </ReactMarkdown>

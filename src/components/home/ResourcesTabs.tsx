@@ -3,14 +3,26 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Video, Code, Terminal, Book, Star, Calendar, Brain, Briefcase, Users, Building2, MessageSquare, Map, GraduationCap, Layout } from 'lucide-react';
+import { FileText, Video, Code, Terminal, Book, Star, Calendar, Brain, Briefcase, Users, Building2, MessageSquare, Map, GraduationCap, Layout, Rocket, Database } from 'lucide-react';
 import { PremiumCard } from '../ui/PremiumCard';
 import styles from './Resources.module.css';
 import { placementResources } from '@/data/placementResources';
 import { InternshipCalendarModal } from '../resources/InternshipCalendarModal';
+import { RoadmapModal } from '../resources/RoadmapModal';
+
+interface ResourceItem {
+    title: string;
+    description: string;
+    icon: any;
+    color: string;
+    rating: number;
+    status: string;
+    isDetailed?: boolean;
+    details?: any;
+}
 
 // --- Original Data (Restored) ---
-const originalResources = {
+const originalResources: Record<string, ResourceItem[]> = {
     internships: [
         {
             title: "Internship Calendar",
@@ -83,6 +95,172 @@ const originalResources = {
     ],
     roadmaps: [
         {
+            title: "Ultimate ML & AI Roadmap 2025",
+            description: "Placement Focused Roadmap: From Foundations to Model Deployment & Productizing.",
+            icon: <Brain size={28} />,
+            color: "#8b5cf6", // Purple for AI
+            rating: 5.0,
+            status: 'active',
+            isDetailed: true,
+            details: {
+                title: "Ultimate ML & AI Roadmap 2025",
+                phases: [
+                    {
+                        title: "Phase 1: Foundations",
+                        duration: "1-2 months",
+                        icon: <Code size={20} />,
+                        items: [
+                            {
+                                subtitle: "Programming",
+                                points: [
+                                    "Deepen expertise in Python. Explore advanced usage (list comprehensions, decorators, context managers).",
+                                    "Optional: Familiarize with C/Java/R if required by specialized solutions or corporate integrations."
+                                ]
+                            },
+                            {
+                                subtitle: "Version Control",
+                                points: [
+                                    "Master Git (branching, rebasing, pull requests, resolving conflicts).",
+                                    "Use GitHub for both project hosting and collaboration."
+                                ]
+                            },
+                            {
+                                subtitle: "Data Structures & Algorithms",
+                                points: [
+                                    "Refine problem-solving using DSA (Leetcode, HackerRank) with a focus on interview patterns, optimizing code for hackathons or coding rounds."
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "Phase 2: Data & Math Core",
+                        duration: "1-2 months",
+                        icon: <Database size={20} />,
+                        items: [
+                            {
+                                subtitle: "SQL",
+                                points: [
+                                    "Gain fluency in database queries, joins, aggregation, filtering, and data pipeline basics.",
+                                    "MySQL / SQLite / PostgreSQL."
+                                ]
+                            },
+                            {
+                                subtitle: "Maths",
+                                points: [
+                                    "Linear Algebra: Vectors, matrices, eigenvalues—use Khan Academy or 3Blue1Brown visual explanations.",
+                                    "Statistics: Basic concepts (mean, median, standard deviation, distributions, Bayes' theorem).",
+                                    "Probability & Calculus: Required for understanding model working and optimization. Apply concepts directly via code (NumPy, custom functions)."
+                                ]
+                            },
+                            {
+                                subtitle: "Data Handling & Visualization",
+                                points: [
+                                    "Master Pandas (dataframes, filtering, groupby, joins) and NumPy (array manipulations).",
+                                    "Use Matplotlib/Seaborn for visualization - build mini-projects for EDA (Exploratory Data Analysis)."
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "Phase 3: Machine Learning Fundamentals",
+                        duration: "2-3 months",
+                        icon: <Brain size={20} />,
+                        items: [
+                            {
+                                subtitle: "Core ML Algorithms",
+                                points: [
+                                    "Linear regression, logistic regression, decision trees, SVMs, clustering (KMeans, PCA, etc.)."
+                                ]
+                            },
+                            {
+                                subtitle: "Hands-On Projects",
+                                points: [
+                                    "Apply each concept on datasets from Kaggle/UCI (start with Titanic, Housing Prices)."
+                                ]
+                            },
+                            {
+                                subtitle: "Frameworks",
+                                points: [
+                                    "Focus on scikit-learn for classical ML; learn model evaluation metrics (accuracy, F1, ROC).",
+                                    "Implement pipelines, cross-validation, and hyperparameter tuning."
+                                ]
+                            },
+                            {
+                                subtitle: "Project Tips",
+                                points: [
+                                    "Document every project clearly on GitHub; include code, README, data source, and results."
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "Phase 4: Advanced AI/ML Topics",
+                        duration: "3-4 months",
+                        icon: <Rocket size={20} />,
+                        items: [
+                            {
+                                subtitle: "Deep Learning",
+                                points: [
+                                    "Learn fundamentals using TensorFlow and PyTorch.",
+                                    "Neural Networks, CNNs, RNNs: Build projects: image classification, sentiment analysis, object detection."
+                                ]
+                            },
+                            {
+                                subtitle: "NLP (Natural Language Processing)",
+                                points: [
+                                    "Tokenization, embeddings, basic LLMs, transfer learning (HuggingFace/Transformers), language model fine-tuning.",
+                                    "Explore GenAI, Prompt Engineering, RAG (retrieval-augmented generation), and agentic workflows (LangChain, Sarvam AI if available)."
+                                ]
+                            },
+                            {
+                                subtitle: "Computer Vision",
+                                points: [
+                                    "OpenCV, image augmentation, using pretrained networks for detection/segmentation."
+                                ]
+                            },
+                            {
+                                subtitle: "MLOps (Optional but recommended)",
+                                points: [
+                                    "Model versioning, model packaging, and basics of CI/CD for ML. Tools: MLflow, DVC, and experiment tracking."
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        title: "Phase 5: Model Deployment & Productizing",
+                        duration: "1-2 months",
+                        icon: <Briefcase size={20} />,
+                        items: [
+                            {
+                                subtitle: "APIs",
+                                points: [
+                                    "Build RESTful APIs using Flask, FastAPI, or Django; expose ML models as services."
+                                ]
+                            },
+                            {
+                                subtitle: "UI/UX Integration",
+                                points: [
+                                    "Connect APIs to simple React/Figma-based UIs or integrate with WhatsApp/Telegram bots for demoing."
+                                ]
+                            },
+                            {
+                                subtitle: "Containerization & Cloud",
+                                points: [
+                                    "Learn Docker basics; deploy on Heroku, Vercel, or Indian providers (GCP Free Tier by default, consider AWS/GCP for hackathons)."
+                                ]
+                            },
+                            {
+                                subtitle: "Monitoring",
+                                points: [
+                                    "Basic logging and error handling for production models."
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
             title: "Frontend Roadmap",
             description: "Step-by-step guide to becoming a modern Frontend Developer (HTML, CSS, React, Next.js).",
             icon: <Layout size={28} />,
@@ -121,18 +299,20 @@ const categoryConfig: Record<string, { icon: any, color: string }> = {
 };
 
 export default function ResourcesTabs() {
-    // 5 Main Sections
+    // 5 Main Sections - Reordered: Roadmaps First
     const mainSections = [
+        { id: 'roadmaps', label: 'Roadmaps', icon: <Map size={18} /> },
         { id: 'ai-prompts', label: 'AI Prompts', icon: <Brain size={18} /> },
         { id: 'internships', label: 'Internships', icon: <Briefcase size={18} /> },
         { id: 'learning', label: 'Learning', icon: <GraduationCap size={18} /> },
         { id: 'practice', label: 'Practice', icon: <Code size={18} /> },
-        { id: 'roadmaps', label: 'Roadmaps', icon: <Map size={18} /> },
     ];
 
-    const [activeMainTab, setActiveMainTab] = useState('ai-prompts');
+    const [activeMainTab, setActiveMainTab] = useState('roadmaps');
     const [activeSubTab, setActiveSubTab] = useState(aiPromptsCategories[0]);
     const [isInternshipModalOpen, setIsInternshipModalOpen] = useState(false);
+    const [isRoadmapModalOpen, setIsRoadmapModalOpen] = useState(false);
+    const [activeRoadmap, setActiveRoadmap] = useState<any>(null);
 
     const searchParams = useSearchParams();
 
@@ -144,9 +324,12 @@ export default function ResourcesTabs() {
         }
     }, [searchParams]);
 
-    const handleAccessNow = (title: string) => {
-        if (title === "Internship Calendar") {
+    const handleAccessNow = (resource: any) => {
+        if (resource.title === "Internship Calendar") {
             setIsInternshipModalOpen(true);
+        } else if (resource.isDetailed) {
+            setActiveRoadmap(resource.details);
+            setIsRoadmapModalOpen(true);
         }
     };
 
@@ -155,6 +338,12 @@ export default function ResourcesTabs() {
             <InternshipCalendarModal
                 isOpen={isInternshipModalOpen}
                 onClose={() => setIsInternshipModalOpen(false)}
+            />
+
+            <RoadmapModal
+                isOpen={isRoadmapModalOpen}
+                onClose={() => setIsRoadmapModalOpen(false)}
+                roadmap={activeRoadmap}
             />
 
             {/* Header */}
@@ -311,10 +500,10 @@ export default function ResourcesTabs() {
                                             </div>
                                             <button
                                                 className={`${styles.action} ${resource.status === 'coming_soon' ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                onClick={() => resource.status !== 'coming_soon' && handleAccessNow(resource.title)}
+                                                onClick={() => resource.status !== 'coming_soon' && handleAccessNow(resource)}
                                                 disabled={resource.status === 'coming_soon'}
                                             >
-                                                Access Now
+                                                {resource.isDetailed ? "View Roadmap" : "Access Now"}
                                             </button>
                                         </div>
                                     </PremiumCard>
@@ -327,3 +516,4 @@ export default function ResourcesTabs() {
         </div>
     );
 }
+
