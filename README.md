@@ -1,5 +1,5 @@
 # DevPath Community Website
-
+zz
 ![DevPath Logo](public/logo.png)
 
 Welcome to the official repository for the **DevPath Community Website**. This platform is designed to foster collaboration, share resources, manage events, and connect developers within the DevPath community. Built with the latest web technologies, it offers a modern, responsive, and interactive user experience.
@@ -93,6 +93,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 Built with ❤️ by the DevPath Community.
 
-## 🌟 Major Contributors
+# 🌟 Major Contributors
 
 - **Aditya948351** - Core Maintainer & Lead Developer
