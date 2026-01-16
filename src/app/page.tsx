@@ -25,7 +25,7 @@ export default function Home() {
 
       <div id="events-section">
         <SectionEntrance delay={0.2}>
-          <Events />
+          <Events type="upcoming" />
         </SectionEntrance>
       </div>
 

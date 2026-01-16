@@ -15,17 +15,24 @@ export default function LatestEventsHighlight({ className }: { className?: strin
         let mounted = true;
         const fetchLatestEvent = async () => {
             try {
-                // Query for events sorted by date ascending to get the nearest upcoming one
+                // Query for events sorted by date ascending
                 const q = query(
                     collection(db, 'events'),
                     orderBy('date', 'asc'),
-                    limit(1)
+                    limit(20) // Fetch more to filter client-side
                 );
 
                 const snapshot = await getDocs(q);
                 if (mounted && !snapshot.empty) {
-                    const eventData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() };
-                    setEvent(eventData);
+                    const now = new Date();
+                    // Find the first event that is in the future
+                    const upcomingEvent = snapshot.docs
+                        .map(doc => ({ id: doc.id, ...doc.data() } as any))
+                        .find(event => new Date(event.date) >= now);
+
+                    if (upcomingEvent) {
+                        setEvent(upcomingEvent);
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching latest event:", error);

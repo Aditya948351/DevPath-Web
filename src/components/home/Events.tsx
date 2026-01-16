@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import styles from './Events.module.css';
 
-export default function Events() {
+export default function Events({ type = 'upcoming' }: { type?: 'upcoming' | 'past' }) {
     const [events, setEvents] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -16,7 +16,24 @@ export default function Events() {
             try {
                 const q = query(collection(db, 'events'), orderBy('date', 'asc'));
                 const snapshot = await getDocs(q);
-                setEvents(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                const allEvents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as any));
+
+                const now = new Date();
+                const filteredEvents = allEvents.filter(event => {
+                    const eventDate = new Date(event.date);
+                    if (type === 'upcoming') {
+                        return eventDate >= now;
+                    } else {
+                        return eventDate < now;
+                    }
+                });
+
+                // For past events, we might want to show most recent first
+                if (type === 'past') {
+                    filteredEvents.reverse();
+                }
+
+                setEvents(filteredEvents);
             } catch (error) {
                 console.error("Error fetching events:", error);
             } finally {
@@ -25,7 +42,7 @@ export default function Events() {
         };
 
         fetchEvents();
-    }, []);
+    }, [type]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollXProgress } = useScroll({ container: containerRef });
@@ -33,9 +50,13 @@ export default function Events() {
     return (
         <section className={styles.events}>
             <div className={styles.header}>
-                <h2 className={styles.title}>Upcoming Events</h2>
+                <h2 className={styles.title}>
+                    {type === 'upcoming' ? 'Upcoming Events' : 'Completed Events'}
+                </h2>
                 <p className={styles.subtitle}>
-                    Join live sessions, workshops, and challenges to level up your skills.
+                    {type === 'upcoming'
+                        ? 'Join live sessions, workshops, and challenges to level up your skills.'
+                        : 'Check out our past events and see what we have accomplished.'}
                 </p>
             </div>
 
@@ -44,7 +65,11 @@ export default function Events() {
                     {loading ? (
                         <div className="text-center py-12 text-muted-foreground w-full">Loading events...</div>
                     ) : events.length === 0 ? (
-                        <div className="text-center py-12 text-muted-foreground w-full">No upcoming events scheduled.</div>
+                        <div className="text-center py-12 text-muted-foreground w-full">
+                            {type === 'upcoming'
+                                ? 'No upcoming events scheduled.'
+                                : 'No completed events found.'}
+                        </div>
                     ) : (
                         events.map((event, index) => (
                             <EventCard key={event.id} event={event} index={index} />
