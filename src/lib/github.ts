@@ -5,7 +5,7 @@ const DEVPATH_REPO =
   'devpathindcommunity-india/DevPath-Web';
 const PER_PAGE = process.env.NEXT_PUBLIC_GITHUB_PER_PAGE ?? '100';
 export const fetchUserProfile = async (token: string) => {
-  const res = await fetch('${GITHUB_API}/user', {
+  const res = await fetch(`${GITHUB_API}/user`, {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github.v3+json',
@@ -17,7 +17,7 @@ export const fetchUserProfile = async (token: string) => {
 
 export const fetchUserRepos = async (token: string) => {
   const res = await fetch(
-    '${GITHUB_API}/user/repos?sort=updated&per_page=${PER_PAGE}&type=all',
+    `${GITHUB_API}/user/repos?sort=updated&per_page=${PER_PAGE}&type=all`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ export const fetchRepoContributorStats = async (token?: string) => {
     }
 
     let res = await fetch(
-      '${GITHUB_API}/repos/${DEVPATH_REPO}/stats/contributors',
+      `${GITHUB_API}/repos/${DEVPATH_REPO}/stats/contributors`,
       { headers }
     );
 
@@ -85,7 +85,7 @@ export const fetchRepoContributorStats = async (token?: string) => {
     while (res.status === 202 && retries < 3) {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       res = await fetch(
-        '${GITHUB_API}/repos/${DEVPATH_REPO}/stats/contributors',
+        `${GITHUB_API}/repos/${DEVPATH_REPO}/stats/contributors`,
         { headers }
       );
       retries++;
