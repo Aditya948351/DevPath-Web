@@ -56,7 +56,7 @@ const CODE_LINES = [
   'pip install knowledge',
   'docker build -t devpath .',
   'kubectl apply -f community.yaml',
-  'curl -X POST ${DEVPATH_API}/join',
+  `curl -X POST ${DEVPATH_API}/join`,
   'chmod +x ./your_potential.sh',
   './launch_career.sh --mode=open-source',
 
