@@ -26,7 +26,7 @@ async function debugProjects() {
     const query = {
       structuredQuery: {
         from: [{ collectionId: 'projects', allDescendants: true }],
-        limit: 10,
+        limit: { value: 10 },
       },
     };
 

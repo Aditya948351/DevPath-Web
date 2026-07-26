@@ -49,7 +49,7 @@ async function main() {
       e.title &&
       (e.title.includes('Hack') ||
         e.title.includes('Fiesta') ||
-        e.title.includes('Flesta'))
+        e.title.includes('Fiesta'))
   );
 
   if (fiesta) {
