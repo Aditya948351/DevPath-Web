@@ -6,9 +6,9 @@ import Link from 'next/link';
 import Button from '../ui/Button';
 import InteractiveBackground from '../ui/InteractiveBackground';
 import styles from './Hero.module.css';
+import { useEffect, useState, useRef } from 'react';
 
 const LatestEventsHighlight = dynamic(() => import('./LatestEventsHighlight'));
-import { useEffect, useState, useRef } from 'react';
 
 const HeaderScene = dynamic(() => import('@/components/3d/HeaderScene'), {
   ssr: false,
