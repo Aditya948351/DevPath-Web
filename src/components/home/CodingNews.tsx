@@ -105,7 +105,13 @@ export default function CodingNews() {
         throw new Error('Failed to fetch news');
       }
       const data = await response.json();
-      setNews(data);
+      if (Array.isArray(data)) {
+        setNews(data as NewsItem[]);
+      } else if (data && Array.isArray(data.articles)) {
+        setNews(data.articles as NewsItem[]);
+      } else {
+        setNews(FALLBACK_NEWS);
+      }
     } catch (err) {
       console.error('Error fetching news:', err);
       // Fall back gracefully even if fetch fails

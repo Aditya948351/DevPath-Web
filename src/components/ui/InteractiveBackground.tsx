@@ -1,8 +1,9 @@
 'use client';
-const DEVPATH_API =
-  process.env.NEXT_PUBLIC_DEVPATH_API_URL ?? 'https://api.devpath.in';
 import { useEffect, useRef } from 'react';
 import { useUIStore } from '@/stores/ui-store';
+
+const DEVPATH_API =
+  process.env.NEXT_PUBLIC_DEVPATH_API_URL ?? 'https://api.devpath.in';
 
 // Code snippets that type across the screen — dev/community themed
 const CODE_LINES = [
