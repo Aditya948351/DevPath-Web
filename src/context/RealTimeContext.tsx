@@ -1,8 +1,9 @@
 'use client';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
 const AVATAR_API =
   process.env.NEXT_PUBLIC_AVATAR_API_URL ??
   'https://api.dicebear.com/7.x/avataaars/svg';
-import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface Activity {
   id: number;
