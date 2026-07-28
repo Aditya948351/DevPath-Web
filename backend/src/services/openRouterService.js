@@ -154,19 +154,23 @@ const callOpenRouter = async ({ apiKey, model, message, history }) => {
       body: JSON.stringify(payload),
     });
 
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      throw new AppError(
+        errorBody?.error?.message || `OpenRouter request failed for model ${model}`,
+        response.status,
+        'OPENROUTER_ERROR'
+      );
+    }
+
     data = await response.json();
   } catch (error) {
+    if (error instanceof AppError) throw error;
     throw new AppError(
       `OpenRouter network request failed for model ${model}: ${error.message}`,
       502,
       'OPENROUTER_NETWORK_ERROR'
     );
-  }
-
-  if (!response.ok) {
-    const messageText =
-      data?.error?.message || `OpenRouter request failed for model ${model}`;
-    throw new AppError(messageText, response.status, 'OPENROUTER_ERROR');
   }
 
   const reply = data?.choices?.[0]?.message?.content?.trim();
