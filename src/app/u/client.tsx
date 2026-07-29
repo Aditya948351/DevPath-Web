@@ -460,6 +460,7 @@ function ProfileContent({ uid }: { uid?: string }) {
   const handleShareProject = (projectId: string) => {
     const url = window.location.href;
     copyToClipboard(url).then((copiedSuccessfully) => {
+.catch(err => console.error(err))
       if (copiedSuccessfully) {
         showSuccess('Project link copied to clipboard.');
       } else {
