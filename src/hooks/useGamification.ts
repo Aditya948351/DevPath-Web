@@ -16,16 +16,4 @@ export function useGamification(userId: string) {
   useEffect(() => {
     if (!userId) return;
     getDoc(doc(db, 'members', userId)).then((snap) => setProfile(snap.data()));
-  }, [userId]);
-
-  async function awardXP(action: keyof typeof XP_VALUES) {
-    const xp = XP_VALUES[action];
-    const ref = doc(db, 'members', userId);
-    await updateDoc(ref, {
-      points: increment(xp),
-      activityDates: arrayUnion(todayString()),
-    });
-  }
-
-  return { profile, awardXP };
-}
+    .catch(err => console.error(err))
